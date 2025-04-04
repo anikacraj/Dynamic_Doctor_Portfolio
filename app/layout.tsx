@@ -14,9 +14,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+
       <body className={inter.className}>
+      <ul>
+        <li>
+           
+        </li>
+      </ul>
         <Toaster />
         <SessionProvider>{children}</SessionProvider>
+    
       </body>
     </html>
   );
