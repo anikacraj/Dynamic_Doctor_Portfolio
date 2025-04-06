@@ -7,10 +7,27 @@ export interface IUser extends Document {
   phoneNo: string;
   password: string;
   isVerified: boolean;
-  verifyToken:string;
+  verifyToken: string;
   verifyTokenExpire: Date;
-  getVerificationToken():string;
+  getVerificationToken(): string;
 
+  // New fields
+  registerId?: string;
+  specialization?: string;
+  profilePhoto?: string;
+  galleryPhotos?: string[];
+  degree?: string;
+  mbbsCollege?: string;
+  profession?: {
+    location: string;
+    days: string[];
+    time: string;
+  };
+  chamber?: {
+    location: string;
+    days: string[];
+    time: string;
+  };
 }
 
 const UserSchema: Schema<IUser> = new mongoose.Schema({
@@ -39,19 +56,51 @@ const UserSchema: Schema<IUser> = new mongoose.Schema({
   verifyToken: {
     type: String,
   },
-  verifyTokenExpire:{
-    type:Date
+  verifyTokenExpire: {
+    type: Date
   },
+
+  // Doctor-specific fields
+  registerId: {
+    type: String,
+  },
+  specialization: {
+    type: String,
+  },
+  profilePhoto: {
+    type: String,
+  },
+  galleryPhotos: [
+    {
+      type: String,
+    }
+  ],
+  degree: {
+    type: String,
+  },
+  mbbsCollege: {
+    type: String,
+  },
+  profession: {
+    location: String,
+    days: [String],
+    time: String,
+  },
+  chamber: {
+    location: String,
+    days: [String],
+    time: String,
+  }
 });
-UserSchema.methods.getVerificationToken=function(): string{
-    const verificationToken = crypto.randomBytes(20).toString('hex');
-//hash the token 
+
+UserSchema.methods.getVerificationToken = function (): string {
+  const verificationToken = crypto.randomBytes(20).toString('hex');
   this.verifyToken = crypto.createHash('sha256')
-  .update(verificationToken)
-  .digest('hex');
-  
-this.verifyTokenExpire= new Date(Date.now()+ 30*60*1000);
-return verificationToken;
+    .update(verificationToken)
+    .digest('hex');
+  this.verifyTokenExpire = new Date(Date.now() + 30 * 60 * 1000);
+  return verificationToken;
 }
+
 export default mongoose.models.User ||
   mongoose.model<IUser>("User", UserSchema);

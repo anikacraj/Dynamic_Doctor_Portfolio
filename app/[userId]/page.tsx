@@ -12,9 +12,9 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   const user = await User.findById(params.userId);
 
   // If the user is not found, show 404 page
-  if (!user) {
-    notFound();
-  }
+  // if (!user) {
+  //   notFound();
+  // }
 
   return (
     <div className="flex justify-center items-center h-screen">

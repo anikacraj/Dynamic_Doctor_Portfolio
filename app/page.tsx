@@ -2,6 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import Loading from "./loading";
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -14,7 +15,7 @@ export default function Home() {
   }, [session]);
 
   if (status === "loading") {
-    return <p>Loading...</p>;
+    return <Loading />;
   }
 
   if (!user) {
@@ -25,7 +26,7 @@ export default function Home() {
     <div className="flex justify-center items-center h-screen">
       <div className="w-full max-w-md">
         <h1 className="text-2xl">Welcome, {user.name}</h1>
-        <p>Email: {user.email}</p>
+        <p className="bold text-5xl">Email: {user.email}</p>
         <p>User ID: {user.id}</p>
       </div>
     </div>
