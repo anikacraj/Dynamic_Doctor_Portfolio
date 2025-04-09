@@ -40,10 +40,10 @@ export default function Header() {
                 
           {user && (
   <li>
-    <Link href='/edit profile ' className="hover:underline">
-      Edit Profile
-    </Link>
-  </li>
+  <Link href={`/${session.user.id}/editProfile`} className="hover:underline">
+    Edit Profile
+  </Link>
+</li>
           )}
         </div>
       </ul>
