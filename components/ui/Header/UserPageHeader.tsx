@@ -2,6 +2,7 @@ import Link from 'next/link'
 
 import Nav from './Nav'
 import { Button } from '../button'
+import MobileNav from './MobileNav'
 
 
 export default function UserPageHeader() {
@@ -29,6 +30,10 @@ export default function UserPageHeader() {
             </Button>
 
           </Link>
+        </div>
+
+        <div className='xl:hidden '>
+<MobileNav />
         </div>
       </div>
     </header>

@@ -1,47 +1,13 @@
 "use client";
 
-import { useState, ChangeEvent, MouseEvent } from "react";
+import { useState, ChangeEvent, MouseEvent,useEffect } from "react";
 import { useSession } from "next-auth/react";
+import userModel from "@/models/user.model";
+import { dbConnect } from "@/config/dbConnect";
+import { IUser } from "@/models/user.model";
+import { Chamber, Degree, DoctorProfile, Experience, Work } from "@/types/doctor";
 
 
-interface Degree {
-  name: string;
-  college: string;
-  year: string;
-}
-interface Work {
-  college: string;
-  day: string;
-  time: string;
-}
-interface Experience {
-
-  college: string;
-  startingYear: string;
-  endingYear: string;
-}
-
-interface chamber {
-  place: string;
-  day: string;
-  time: string;
-}
-
-interface DoctorProfile {
-  email: string;
-  name: string;
-  phoneNo: string;
-  optionalEmail?: string;
-  registerId: string;
-  specialization: string;
-  mbbsCollege: string;
-  degree: Degree[];
-  work: Work[];
-  experience: Experience[];
-  chamber: chamber[];
-  profilePhoto: string;
-  gallery: string[];
-}
 
 interface DoctorProfileEditorProps {
   doctor: DoctorProfile;
@@ -80,108 +46,113 @@ export default function DoctorProfileEditor({ doctor }: DoctorProfileEditorProps
     field: keyof Degree,
     value: string
   ) => {
-    const updatedDegrees = [...formData.degree];
+    const updatedDegrees = [...(formData.degree ?? [])]; // handle undefined case
     updatedDegrees[index] = {
       ...updatedDegrees[index],
       [field]: value,
     };
     setFormData({ ...formData, degree: updatedDegrees });
   };
-
+  
   const addDegree = () => {
     setFormData({
       ...formData,
-      degree: [...formData.degree, { name: "", college: "", year: "" }],
+      degree: [...(formData.degree ?? []), { name: "", college: "", year: "" }],
     });
   };
-
+  
   const removeDegree = (index: number) => {
-    const updatedDegrees = formData.degree.filter((_, i) => i !== index);
+    const updatedDegrees = (formData.degree ?? []).filter((_, i) => i !== index);
     setFormData({ ...formData, degree: updatedDegrees });
   };
 
   // ---------------Work----------------work-------------------------work--------------------------
 
 
-  const handleWorkChange = (
-    index: number,
-    field: keyof Work,
-    value: string
-  ) => {
-    const updatedWork = [...formData.work];
-    updatedWork[index] = {
-      ...updatedWork[index],
-      [field]: value,
-    };
-    setFormData({ ...formData, work: updatedWork });
+ // ---------------Work----------------work-------------------------work--------------------------
+
+const handleWorkChange = (
+  index: number,
+  field: keyof Work,
+  value: string
+) => {
+  const updatedWork = [...(formData.work ?? [])];
+  updatedWork[index] = {
+    ...updatedWork[index],
+    [field]: value,
   };
+  setFormData({ ...formData, work: updatedWork });
+};
 
-  const addWork = () => {
-    setFormData({
-      ...formData,
-      work: [...formData.work, { college: "", day: "", time: "" }],
-    });
+const addWork = () => {
+  setFormData({
+    ...formData,
+    work: [...(formData.work ?? []), { college: "", day: "", time: "" }],
+  });
+};
+
+const removeWork = (index: number) => {
+  const updatedWork = (formData.work ?? []).filter((_, i) => i !== index);
+  setFormData({ ...formData, work: updatedWork });
+};
+
+// -------------------------------experience----------------------experience--------------
+
+const handleExperienceChange = (
+  index: number,
+  field: keyof Experience,
+  value: string
+) => {
+  const updatedExperience = [...(formData.experience ?? [])];
+  updatedExperience[index] = {
+    ...updatedExperience[index],
+    [field]: value,
   };
+  setFormData({ ...formData, experience: updatedExperience });
+};
 
-  const removeWork = (index: number) => {
-    const updatedWork = formData.work.filter((_, i) => i !== index);
-    setFormData({ ...formData, work: updatedWork });
+const addExperience = () => {
+  setFormData({
+    ...formData,
+    experience: [
+      ...(formData.experience ?? []),
+      { college: "", startingYear: "", endingYear: "" },
+    ],
+  });
+};
+
+const removeExperience = (index: number) => {
+  const updatedExperience = (formData.experience ?? []).filter((_, i) => i !== index);
+  setFormData({ ...formData, experience: updatedExperience });
+};
+
+//--------------------chamber------------------chamber-------------------------chamber----------
+
+const handleChamberChange = (
+  index: number,
+  field: keyof Chamber, // ✅ Use proper casing (capitalized type name)
+  value: string
+) => {
+  const updatedChamber = [...(formData.chamber ?? [])];
+  updatedChamber[index] = {
+    ...updatedChamber[index],
+    [field]: value,
   };
+  setFormData({ ...formData, chamber: updatedChamber });
+};
 
-  // -------------------------------experience----------------------experience--------------
+const addChamber = () => {
+  setFormData({
+    ...formData,
+    chamber: [...(formData.chamber ?? []), { place: "", day: "", time: "" }],
+  });
+};
 
+const removeChamber = (index: number) => {
+  const updatedChamber = (formData.chamber ?? []).filter((_, i) => i !== index);
+  setFormData({ ...formData, chamber: updatedChamber });
+};
 
-  const handleExperienceChange = (
-    index: number,
-    field: keyof Experience,
-    value: string
-  ) => {
-    const updatedExperience = [...formData.experience];
-    updatedExperience[index] = {
-      ...updatedExperience[index],
-      [field]: value,
-    };
-    setFormData({ ...formData, experience: updatedExperience });
-  };
-
-  const addExperience = () => {
-    setFormData({
-      ...formData,
-      experience: [...formData.experience, { college: "", startingYear: "", endingYear: "" }],
-    });
-  };
-
-  const removeExperience = (index: number) => {
-    const updatedExperience = formData.experience.filter((_, i) => i !== index);
-    setFormData({ ...formData, experience: updatedExperience });
-  };
-
-  //--------------------chamber------------------chamber-------------------------chamber----------
-
-  const handleChamberChange = (
-    index: number,
-    field: keyof chamber,
-    value: string
-  ) => {
-    const updatedChamber = [...formData.chamber];
-    updatedChamber[index] = {
-      ...updatedChamber[index],
-      [field]: value,
-    };
-    setFormData({ ...formData, chamber: updatedChamber });
-  };
-
-  const addChamber = () => {
-    setFormData({
-      ...formData,
-      chamber: [...formData.chamber, { place: "", day: "", time: "" }],
-    });
-  };
-
-  const removeChamber = (index: number) => {
-    const updatedChamber = formData.chamber.filter((_, i) => i !== index);
-    setFormData({ ...formData, chamber: updatedChamber });
-  };
 
   // const saveDegree = async () => {
   //   try {
@@ -204,35 +175,42 @@ export default function DoctorProfileEditor({ doctor }: DoctorProfileEditorProps
   // };
 
   const handleGalleryUpload = (e: ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
+    const files = Array.from(e.target.files ?? []);
     const fileURLs = files.map((file) => URL.createObjectURL(file));
     setNewGalleryImages((prev) => [...prev, ...fileURLs]);
   };
-
+  
   const addImageToGallery = (img: string) => {
-    setFormData((prev) => ({ ...prev, gallery: [...prev.gallery, img] }));
+    setFormData((prev) => ({
+      ...prev,
+      gallery: [...(prev.gallery ?? []), img], // null-safe
+    }));
     setNewGalleryImages((prev) => prev.filter((i) => i !== img));
   };
-
+  
   const removeGalleryImage = (index: number) => {
-    const updatedGallery = formData.gallery.filter((_, i) => i !== index);
+    const updatedGallery = (formData.gallery ?? []).filter((_, i) => i !== index);
     setFormData({ ...formData, gallery: updatedGallery });
   };
-
+  
   const handleProfilePhotoChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files ? e.target.files[0] : null;
+    const file = e.target.files?.[0] ?? null;
     if (file) {
       const previewUrl = URL.createObjectURL(file);
       setNewProfilePhoto(previewUrl);
     }
   };
-
+  
   const applyNewProfilePhoto = () => {
     if (newProfilePhoto) {
-      setFormData({ ...formData, profilePhoto: newProfilePhoto });
+      setFormData((prev) => ({
+        ...prev,
+        profilePhoto: newProfilePhoto,
+      }));
       setNewProfilePhoto(null);
     }
   };
+  
 
   const fields = [
     { label: "Name", key: "name" },
@@ -264,7 +242,7 @@ export default function DoctorProfileEditor({ doctor }: DoctorProfileEditorProps
         <label className="w-full sm:w-1/3 font-medium text-gray-700">{label}:</label>
         <input
           type="text"
-          value={formData[key] || ""}
+          value={formData[key]  || ""}
           onChange={(e) => handleInputChange(key, e.target.value)}
           disabled={!editFields[key]}
           className={`flex-1 px-4 py-2 border rounded text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 ${editFields[key] ? "border-blue-500 bg-white" : "bg-gray-100 border-gray-300 " }`}
@@ -296,7 +274,7 @@ export default function DoctorProfileEditor({ doctor }: DoctorProfileEditorProps
     {/* Degree Section */}
     <div>
       <label className="block font-medium text-gray-700 mb-2">Degrees:</label>
-      {formData.degree.map((deg, idx) => (
+      {formData.degree?.map((deg, idx) => (
         <div key={idx} className="flex flex-col sm:flex-row gap-2 items-center mb-2 text-center">
           <input
             type="text"
@@ -338,7 +316,7 @@ export default function DoctorProfileEditor({ doctor }: DoctorProfileEditorProps
     {/* Work Section */}
     <div>
       <label className="block font-medium text-gray-700 mb-2">Work Section:</label>
-      {formData.work.map((wk, idx) => (
+      {formData.work?.map((wk, idx) => (
         <div key={idx} className="flex flex-col sm:flex-row gap-4 items-center mb-2">
           <input
             type="text"
@@ -380,7 +358,7 @@ export default function DoctorProfileEditor({ doctor }: DoctorProfileEditorProps
     {/* Experience Section */}
     <div>
       <label className="block font-medium text-gray-700 mb-2">Experience:</label>
-      {formData.experience.map((exp, idx) => (
+      {formData.experience?.map((exp, idx) => (
         <div key={idx} className="flex flex-col sm:flex-row gap-4 items-center mb-2">
           <input
             type="text"
@@ -422,7 +400,7 @@ export default function DoctorProfileEditor({ doctor }: DoctorProfileEditorProps
     {/* Chamber Section */}
     <div>
       <label className="block font-medium text-gray-700 mb-2">Chamber Details:</label>
-      {formData.chamber.map((cham, idx) => (
+      {formData.chamber?.map((cham, idx) => (
         <div key={idx} className="flex flex-col sm:flex-row gap-4 items-center mb-2">
           <input
             type="text"
@@ -463,53 +441,55 @@ export default function DoctorProfileEditor({ doctor }: DoctorProfileEditorProps
   
     {/* Gallery Section */}
     <div>
-      <label className="block font-medium text-gray-700 mb-2">Gallery:</label>
-      {formData.gallery.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-          {formData.gallery.map((img, idx) => (
-            <div key={idx} className="relative group">
-              <img
-                src={img}
-                alt={`gallery-${idx}`}
-                className="w-full h-32 object-cover rounded border"
-              />
-              <button
-                onClick={() => removeGalleryImage(idx)}
-                className="absolute top-1 right-1 px-2 py-1 text-xs bg-red-600 text-white rounded opacity-80 hover:opacity-100"
-              >
-                ✕
-              </button>
-            </div>
-          ))}
+  <label className="block font-medium text-gray-700 mb-2">Gallery:</label>
+  {(formData.gallery?.length || 0) > 0 && (
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+      {formData.gallery?.map((img, idx) => (
+        <div key={idx} className="relative group">
+          <img
+            src={img}
+            alt={`gallery-${idx}`}
+            className="w-full h-32 object-cover rounded border"
+          />
+          <button
+            onClick={() => removeGalleryImage(idx)}
+            className="absolute top-1 right-1 px-2 py-1 text-xs bg-red-600 text-white rounded opacity-80 hover:opacity-100"
+          >
+            ✕
+          </button>
         </div>
-      )}
-      <input
-        type="file"
-        multiple
-        accept="image/*"
-        onChange={handleGalleryUpload}
-        className="mb-4"
-      />
-      {newGalleryImages.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {newGalleryImages.map((img, idx) => (
-            <div key={idx} className="relative">
-              <img
-                src={img}
-                alt={`preview-${idx}`}
-                className="w-full h-32 object-cover rounded border"
-              />
-              <button
-                onClick={() => addImageToGallery(img)}
-                className="absolute bottom-1 left-1 px-2 py-1 text-xs bg-green-600 text-white rounded"
-              >
-                Add
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
+      ))}
     </div>
+  )}
+
+  <input
+    type="file"
+    multiple
+    accept="image/*"
+    onChange={handleGalleryUpload}
+    className="mb-4"
+  />
+
+  {newGalleryImages.length > 0 && (
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      {newGalleryImages.map((img, idx) => (
+        <div key={idx} className="relative">
+          <img
+            src={img}
+            alt={`preview-${idx}`}
+            className="w-full h-32 object-cover rounded border"
+          />
+          <button
+            onClick={() => addImageToGallery(img)}
+            className="absolute bottom-1 left-1 px-2 py-1 text-xs bg-green-600 text-white rounded"
+          >
+            Add
+          </button>
+        </div>
+      ))}
+    </div>
+  )}
+</div>
   </div>
   
       );

@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Loading from "./loading";
 import Header from "@/components/ui/Header/HomePageHeader";
+import Drawer from "@/components/ui/Drawer";
 
 export default function Home() {
   const { data: session, status } = useSession();

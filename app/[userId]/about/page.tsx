@@ -1,7 +1,13 @@
-import React from 'react'
+"use client"
+
+import Degree from '@/components/ui/AboutMe/Degree'
+
+
 
 export default function page() {
   return (
-    <div>page</div>
+    <div>
+   <Degree />
+    </div>
   )
 }
