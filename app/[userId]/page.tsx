@@ -1,9 +1,12 @@
 import { Button } from "@/components/ui/button";
+import Contact from "@/components/ui/Contact";
 import UserPageHeader from "@/components/ui/Header/UserPageHeader";
+import PhotoGallery from "@/components/ui/PhotoGallery";
 import ProfilePhoto from "@/components/ui/ProfilePhoto";
 import Social from "@/components/ui/social";
 import { dbConnect } from "@/config/dbConnect";
 import User from "@/models/user.model";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 type ProfilePageProps = {
@@ -35,11 +38,11 @@ xl:pt-8 xl:pb-24 xl:mt-15
 <h3 className="max-w-[500px] mb-5 text/80">Spealized Lorem ipsum dolor, sit amet consectetur adipisicing elit. Voluptatum, placeat.</h3>
 
 <div className="flex flex-col xl:flex-row items-center gap-8">
-<Button variant="outline" size="lg" className="uppercase rounded-lg flex items-center gap-2
+<Link href='#contact' className="uppercase rounded-lg flex items-center gap-2 border-1 border-amber-500 p-4
 
 ">
-<span className="hover:bg-amber-800-300 transition-all duration-300 ">Download CV</span>
-</Button>
+<span className="hover:bg-amber-800-300 transition-all duration-300 font-serif scroll-auto">Let's Connect With Me </span>
+</Link>
 <div className="mt-[-30px] ">
 <Social />
 </div>
@@ -54,10 +57,16 @@ xl:pt-8 xl:pb-24 xl:mt-15
 </div>
 
 </div>
-
+<PhotoGallery />
 
 
   </div>
+
+<hr />
+
+ <div id="contact">
+ <Contact  />
+ </div>
  </section>
   );
 }

@@ -25,7 +25,7 @@ export default function Nav() {
       path: `/${session.user.id}/work`,
     },
     {
-      name: "Contact",
+      name: "Chamber",
       path: `/${session.user.id}/chamber`,
     },
   ]

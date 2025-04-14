@@ -35,7 +35,7 @@ export default function Drawer({ links }: { links: { name: string; path: string 
       >
         <div className="p-4 border-b flex justify-between items-center">
           <span className="text-lg font-bold">Menu</span>
-          <button onClick={toggleDrawer}>✖</button>
+          <button onClick={toggleDrawer}>❌</button>
         </div>
         <ul className="flex flex-col p-4 space-y-2">
           {links.map((link) => (

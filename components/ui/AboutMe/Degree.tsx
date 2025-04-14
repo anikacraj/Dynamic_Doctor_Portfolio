@@ -33,14 +33,14 @@ import {motion} from "framer-motion"
 
 export default function Degree() {
   return (
-   <section className='min-h-[80vh] flex flex-col justify-center py-12 xl:py-0'>
+   <section className='min-h-[80vh] xl:min-h-[45vh] flex flex-col xl:py-0'>
     <div className='container mx-auto'>
         <motion.div initial={{opacity: 0}} animate={{opacity:1,transition
-            :{delay:2.4, duration:0.4, ease:"easeIn"},
+            :{delay:1, duration:0.4, ease:"easeIn"},
      
        
        }}
-       className='grid grid-col-1 md:grid-cols-2 gap-[60px]'
+       className='grid grid-col-1 md:grid-cols-2 gap-[20px]'
        >
 
 {
@@ -48,6 +48,7 @@ export default function Degree() {
         return(
             <div key={index} className='flex-1 flex flex-col justify-center 
             gap-6 group border-1 rounded-2xl p-2 pl-3'>
+                
 <div className='w-full flex justify-between items-center text-5xl font-extrabold 
 text-outline text-transparent group-hover:text-outline-hover transition-all duration-500
  '>
@@ -60,7 +61,7 @@ mr-1'>
 </div>
 
 </div>
-<p className='text-[42px] font-bold leading-none text-white group-hover:text-accent transition-all duration-500'>{deg.college}</p>
+<p className='text-[30px]  xl:text-[25px] xl:text-justify font-bold leading-none text-white group-hover:text-accent transition-all duration-500'>{deg.college}</p>
 <p className='text-2xl font-extraBold '> Year: {deg.year}</p>
             </div>
         )

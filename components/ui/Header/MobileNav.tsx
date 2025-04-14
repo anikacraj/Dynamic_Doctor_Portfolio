@@ -14,7 +14,7 @@ export default function MobileNav() {
     { name: 'Home', path: `/${session.user.id}` },
     { name: 'About Me', path: `/${session.user.id}/about` },
     { name: 'Work', path: `/${session.user.id}/work` },
-    { name: 'Contact', path: `/${session.user.id}/chamber` },
+    { name: 'chamber', path: `/${session.user.id}/chamber` },
   ];
 
   return (
