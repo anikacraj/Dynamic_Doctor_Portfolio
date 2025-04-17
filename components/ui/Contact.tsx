@@ -4,10 +4,51 @@ import { FaFacebookF, FaInstagram, FaLinkedinIn, FaYoutube } from 'react-icons/f
 import { motion } from 'framer-motion'
 import Link from 'next/link';
 import Image from "next/image";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function Contact() {
+  const [name,setName]=useState("")
+  const [email,setEmail]=useState("")
+  const [address,setAddress]=useState("")
+  const [phone,setPhone]=useState("")
+  const [message,setMessage]=useState("")
+
+//   const handleSubmit= async (e: { preventDefault: () => void; })=>{
+// e.preventDefault();
+
+// const router = useRouter();
+
+// if(!name || !email ||!address || !phone || !message ){
+// alert("Missing any input field ")
+// return ;
+// }
+
+// try {
+//   const res =fetch('http://localhost:3000/api/users/[userId]/contact',{
+//     method:"POST",
+//     headers:{
+//       "Content-type":"application/json"
+//     },
+//     body:JSON.stringify({name,email,address,phone,message}),
+//   })
+
+//   if (res.ok) {
+//     alert("Message Sent Successfully")
+//   } else {
+//     throw new Error("Faild and  again try ")
+//   }
+
+// } catch (error) {
+// console.log(error)
+  
+// }
+
+//   }
+
   return (
-    <div className="relative  border-1 sm:border-2 border-blue-500 rounded-2xl min-h-screen sm:min-h-[20vh] w-full sm:p-15 sm:pt-18 sm:w-3/4 mx-auto mt-3 bg-gradient-to-br from-[#d0f4de] via-[#fef9ef] to-[#fcbf49] flex items-center justify-center xl:p-6 p-2 overflow-hidden">
+    <div className="relative  border-1 sm:border-2 border-blue-500 rounded-2xl min-h-screen sm:min-h-[20vh] 
+    w-full sm:p-15 sm:pt-18 sm:w-3/4 mx-auto mt-3 bg-gradient-to-br from-[#d0f4de] via-[#fef9ef] to-[#fcbf49] flex items-center justify-center xl:p-6 p-2 overflow-hidden">
 
       {/* Glow Circles */}
       <div className="absolute -top-32 -left-32 w-96 h-96 bg-pink-300 rounded-full opacity-20 blur-3xl z-0"></div>
@@ -31,7 +72,7 @@ export default function Contact() {
       </div>
 
       {/* 3D IMAGE */}
-      <div className="order-1 sm:order-none sm:w-[450px] sm:h-[400px] w-[280px] h-[280px] sm:mt-[-50px] relative overflow-hidden shadow-xl ring-1 ring-gray-200 rounded-full sm:rounded-xl">
+      <div className="order-1 sm:order-none lg:w-[320px] lg:h-[350px] w-[280px] h-[280px] sm:mt-[-50px] relative overflow-hidden shadow-xl ring-1 ring-gray-200 rounded-full sm:rounded-xl">
   <Image
     src="/contactDr.png"
     priority
@@ -66,10 +107,13 @@ export default function Contact() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
           className="space-y-5"
+         
         >
           <div>
             <label className="block text-gray-800 font-medium mb-1">Name</label>
             <input
+            onChange={(e)=>setName(e.target.value)}
+            value={name}
               type="text"
               placeholder="Enter your name"
               className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-400 focus:outline-none bg-white/70 shadow-md"
@@ -80,6 +124,8 @@ export default function Contact() {
           <div>
             <label className="block text-gray-800 font-medium mb-1">Email</label>
             <input
+             onChange={(e)=>setEmail(e.target.value)}
+             value={email}
               type="email"
               placeholder="example@email.com"
               className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-400 focus:outline-none bg-white/70 shadow-md"
@@ -90,6 +136,8 @@ export default function Contact() {
           <div>
             <label className="block text-gray-800 font-medium mb-1">Address</label>
             <input
+             onChange={(e)=>setAddress(e.target.value)}
+             value={address}
               type="text"
               placeholder="Enter your address"
               className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-400 focus:outline-none bg-white/70 shadow-md"
@@ -99,6 +147,8 @@ export default function Contact() {
           <div>
             <label className="block text-gray-800 font-medium mb-1">Phone</label>
             <input
+             onChange={(e)=>setPhone(e.target.value)}
+             value={phone}
               type="tel"
               placeholder="+880..."
               className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-400 focus:outline-none bg-white/70 shadow-md"
@@ -108,9 +158,12 @@ export default function Contact() {
           <div>
             <label className="block text-gray-800 font-medium mb-1">Message</label>
             <textarea
+             onChange={(e)=>setMessage(e.target.value)}
+             value={message}
               rows={4}
+             cols={10}
               placeholder="Write your message..."
-              className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-400 focus:outline-none bg-white/70 shadow-md"
+              className="w-full p-3 rounded-xl border resize-none border-gray-300 focus:ring-2 focus:ring-green-400 focus:outline-none bg-white/70 shadow-md"
               required
             ></textarea>
           </div>

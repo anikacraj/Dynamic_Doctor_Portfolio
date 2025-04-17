@@ -2,7 +2,17 @@ import mongoose, { Document, Schema } from "mongoose";
 import crypto from "crypto";
 import { Degree, Work, Experience, Chamber } from "@/types/doctor";
 
+// Contact message interface
+interface Contact {
+  name: string;
+  email: string;
+  address: string;
+  phoneNo: string;
+  message: string;
+  createdAt?: Date;
+}
 
+// Main User interface
 export interface IUser extends Document {
   name: string;
   email: string;
@@ -23,6 +33,7 @@ export interface IUser extends Document {
   work?: Work[];
   experience?: Experience[];
   chamber?: Chamber[];
+  contacts?: Contact[];
 }
 
 const UserSchema: Schema<IUser> = new mongoose.Schema(
@@ -39,41 +50,72 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
     registerId: { type: String, required: false, unique: true, sparse: true },
     specialization: { type: String, required: false },
     profilePhoto: { type: String, required: false },
-    gallery: [{ type: String }],
-    degree: [
-      {
-        name: { type: String, required: false },
-        college: { type: String, required: false },
-        year: { type: String, required: false },
-      },
-    ],
+    gallery: { type: [String], default: [] },
+
+    degree: {
+      type: [
+        {
+          name: { type: String, required: false },
+          college: { type: String, required: false },
+          year: { type: String, required: false },
+        },
+      ],
+      default: [],
+    },
+
     mbbsCollege: { type: String, required: false },
-    work: [
-      {
-        college: { type: String, required: false },
-        day: { type: String, required: false },
-        time: { type: String, required: false },
-      },
-    ],
-    experience: [
-      {
-        college: { type: String, required: false },
-        startingYear: { type: String, required: false },
-        endingYear: { type: String, required: false },
-      },
-    ],
-    chamber: [
-      {
-        place: { type: String, required: false },
-        day: { type: String, required: false },
-        time: { type: String, required: false },
-      },
-    ],
+
+    work: {
+      type: [
+        {
+          college: { type: String, required: false },
+          day: { type: String, required: false },
+          time: { type: String, required: false },
+        },
+      ],
+      default: [],
+    },
+
+    experience: {
+      type: [
+        {
+          college: { type: String, required: false },
+          startingYear: { type: String, required: false },
+          endingYear: { type: String, required: false },
+        },
+      ],
+      default: [],
+    },
+
+    chamber: {
+      type: [
+        {
+          place: { type: String, required: false },
+          day: { type: String, required: false },
+          time: { type: String, required: false },
+        },
+      ],
+      default: [],
+    },
+
+    contacts: {
+      type: [
+        {
+          name: { type: String, required: false },
+          email: { type: String, required: false },
+          address: { type: String, required: false },
+          phoneNo: { type: String, required: false },
+          message: { type: String, required: false },
+          createdAt: { type: Date, default: Date.now },
+        },
+      ],
+      default: [],
+    },
   },
   { timestamps: true }
 );
 
-// Generate Verification Token
+// ✅ Generate Verification Token Method
 UserSchema.methods.getVerificationToken = function (): string {
   const verificationToken = crypto.randomBytes(20).toString("hex");
   this.verifyToken = crypto.createHash("sha256").update(verificationToken).digest("hex");

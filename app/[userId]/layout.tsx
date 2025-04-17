@@ -1,5 +1,6 @@
 "use client";
 
+import Footer from "@/components/ui/Footer";
 import UserPageHeader from "@/components/ui/Header/UserPageHeader";
 import { PageTransition } from "@/components/ui/PageTransition";
 import { Toaster } from "@/components/ui/toaster";
@@ -21,6 +22,7 @@ export default function UserLayout({
       </PageTransition> */}
 
       {children}
+  
     </div>
   );
 }

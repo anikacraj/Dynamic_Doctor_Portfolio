@@ -28,7 +28,7 @@ export default function Header() {
   return (
     <>
       {/* Header Wrapper */}
-      <div className="py-13 xl:py-12 text-accent px-4 w-full">
+      <div className="py-13 xl:py-12 text-accent px-4 w-3/4">
         <div className="w-full mx-auto flex justify-between items-center">
           {/* Logo */}
           <Link href="/" className="sm:ml-30">

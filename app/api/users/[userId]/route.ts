@@ -14,11 +14,5 @@ export async function GET(req: NextRequest, { params }: { params: { userId: stri
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 
-  try {
-    await dbConnect();
-    const allUsers = await User.find(); // you can filter by role if needed
-    return NextResponse.json(allUsers);
-  } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch users" }, { status: 500 });
-  }
+ 
 }
