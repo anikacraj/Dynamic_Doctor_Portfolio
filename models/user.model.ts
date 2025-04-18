@@ -28,7 +28,7 @@ export interface IUser extends Document {
   specialization?: string;
   profilePhoto?: string;
   gallery?: string[];
-  degree?: Degree[];
+  degrees?: Degree[];
   mbbsCollege?: string;
   work?: Work[];
   experience?: Experience[];
@@ -52,16 +52,17 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
     profilePhoto: { type: String, required: false },
     gallery: { type: [String], default: [] },
 
-    degree: {
+    degrees: {
       type: [
         {
-          name: { type: String, required: false },
-          college: { type: String, required: false },
-          year: { type: String, required: false },
+          name: { type: String },
+          college: { type: String },
+          year: { type: String },
         },
       ],
       default: [],
     },
+    
 
     mbbsCollege: { type: String, required: false },
 

@@ -1,496 +1,539 @@
 "use client";
 
-import { useState, ChangeEvent, MouseEvent,useEffect } from "react";
-import { useSession } from "next-auth/react";
-import userModel from "@/models/user.model";
-import { dbConnect } from "@/config/dbConnect";
-import { IUser } from "@/models/user.model";
-import { Chamber, Degree, DoctorProfile, Experience, Work } from "@/types/doctor";
+import { useState, ChangeEvent, useEffect } from "react";
+import { useParams } from "next/navigation";
 
-
-
-interface DoctorProfileEditorProps {
-  doctor: DoctorProfile;
+interface DoctorProfile {
+  name: string;
+  email: string;
+  phoneNo: string;
+  optionalEmail: string;
+  registerId: string;
+  specialization: string;
+  mbbsCollege: string;
+  profilePhoto: string;
+  degrees: { name: string; college: string; year: string }[];
+  work: { college: string; day: string; time: string }[];
+  experience: { college: string; startingYear: string; endingYear: string }[];
+  chamber: { place: string; day: string; time: string }[];
+  gallery: string[];
 }
 
-export default function DoctorProfileEditor({ doctor }: DoctorProfileEditorProps) {
-  const [formData, setFormData] = useState<DoctorProfile>(() => {
-    const safeDoctor = doctor || {} as DoctorProfile;
-    return {
-      ...safeDoctor,
-      degree: Array.isArray(safeDoctor.degree) ? safeDoctor.degree : [],
-      work: Array.isArray(safeDoctor.work) ? safeDoctor.work : [],
-      experience: Array.isArray(safeDoctor.experience) ? safeDoctor.experience : [],
-      chamber: Array.isArray(safeDoctor.chamber) ? safeDoctor.chamber : [],
-      gallery: Array.isArray(safeDoctor.gallery) ? safeDoctor.gallery : [],
-      profilePhoto: safeDoctor.profilePhoto || "",
-    };
+export default function DoctorProfileEditor() {
+  const { userId } = useParams();
+  const [user, setUser] = useState<DoctorProfile | null>(null);
+
+  const [formData, setFormData] = useState<DoctorProfile>({
+    name: "",
+    email: "",
+    phoneNo: "",
+    optionalEmail: "",
+    registerId: "",
+    specialization: "",
+    mbbsCollege: "",
+    profilePhoto: "",
+    degrees: [],
+    work: [],
+    experience: [],
+    chamber: [],
+    gallery: [],
   });
 
-  const [editFields, setEditFields] = useState<Record<string, boolean>>({});
-  const [newGalleryImages, setNewGalleryImages] = useState<string[]>([]);
-  const [newProfilePhoto, setNewProfilePhoto] = useState<string | null>(null);
+  // Fetch user
+  useEffect(() => {
+    if (!userId) return;
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    fetch(`/api/users/${userId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Fetched user:", data); // debug
+        setUser(data);
+      })
+      .catch((err) => console.error("Error fetching user:", err));
+  }, [userId]);
+
+  useEffect(() => {
+    if (user) {
+      setFormData(user);
+    }
+  }, [user]);
+
+  // Handlers
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
-  const toggleEdit = (field: string) => {
-    setEditFields((prev) => ({ ...prev, [field]: !prev[field] }));
+  const handleDegreeChange = (index: number, field: string, value: string) => {
+    const updated = [...formData.degrees];
+    updated[index] = { ...updated[index], [field]: value };
+    setFormData({ ...formData, degrees: updated });
   };
-
-  // ------------DEGREE-------------------------------------------------degree--------------degree
-
-  const handleDegreeChange = (
-    index: number,
-    field: keyof Degree,
-    value: string
-  ) => {
-    const updatedDegrees = [...(formData.degree ?? [])]; // handle undefined case
-    updatedDegrees[index] = {
-      ...updatedDegrees[index],
-      [field]: value,
-    };
-    setFormData({ ...formData, degree: updatedDegrees });
-  };
-  
   const addDegree = () => {
-    setFormData({
-      ...formData,
-      degree: [...(formData.degree ?? []), { name: "", college: "", year: "" }],
-    });
+    const updatedDegrees = [...(formData.degrees || []), { name: "", college: "", year: "" }];
+    setFormData((prev) => ({ ...prev, degrees: updatedDegrees }));
+    console.log("Added degree:", updatedDegrees);
   };
-  
-  const removeDegree = (index: number) => {
-    const updatedDegrees = (formData.degree ?? []).filter((_, i) => i !== index);
-    setFormData({ ...formData, degree: updatedDegrees });
+  const removeDegree = (index: number) => setFormData({ ...formData, degrees: formData.degrees.filter((_, i) => i !== index) });
+
+  const handleWorkChange = (index: number, field: string, value: string) => {
+    const updated = [...formData.work];
+    updated[index] = { ...updated[index], [field]: value };
+    setFormData({ ...formData, work: updated });
   };
+  const addWork = () => setFormData({ ...formData, work: [...formData.work, { college: "", day: "", time: "" }] });
+  const removeWork = (index: number) => setFormData({ ...formData, work: formData.work.filter((_, i) => i !== index) });
 
-  // ---------------Work----------------work-------------------------work--------------------------
-
-
- // ---------------Work----------------work-------------------------work--------------------------
-
-const handleWorkChange = (
-  index: number,
-  field: keyof Work,
-  value: string
-) => {
-  const updatedWork = [...(formData.work ?? [])];
-  updatedWork[index] = {
-    ...updatedWork[index],
-    [field]: value,
+  const handleExperienceChange = (index: number, field: string, value: string) => {
+    const updated = [...formData.experience];
+    updated[index] = { ...updated[index], [field]: value };
+    setFormData({ ...formData, experience: updated });
   };
-  setFormData({ ...formData, work: updatedWork });
-};
+  const addExperience = () => setFormData({ ...formData, experience: [...formData.experience, { college: "", startingYear: "", endingYear: "" }] });
+  const removeExperience = (index: number) => setFormData({ ...formData, experience: formData.experience.filter((_, i) => i !== index) });
 
-const addWork = () => {
-  setFormData({
-    ...formData,
-    work: [...(formData.work ?? []), { college: "", day: "", time: "" }],
-  });
-};
-
-const removeWork = (index: number) => {
-  const updatedWork = (formData.work ?? []).filter((_, i) => i !== index);
-  setFormData({ ...formData, work: updatedWork });
-};
-
-// -------------------------------experience----------------------experience--------------
-
-const handleExperienceChange = (
-  index: number,
-  field: keyof Experience,
-  value: string
-) => {
-  const updatedExperience = [...(formData.experience ?? [])];
-  updatedExperience[index] = {
-    ...updatedExperience[index],
-    [field]: value,
+  const handleChamberChange = (index: number, field: string, value: string) => {
+    const updated = [...formData.chamber];
+    updated[index] = { ...updated[index], [field]: value };
+    setFormData({ ...formData, chamber: updated });
   };
-  setFormData({ ...formData, experience: updatedExperience });
-};
+  const addChamber = () => setFormData({ ...formData, chamber: [...formData.chamber, { place: "", day: "", time: "" }] });
+  const removeChamber = (index: number) => setFormData({ ...formData, chamber: formData.chamber.filter((_, i) => i !== index) });
 
-const addExperience = () => {
-  setFormData({
-    ...formData,
-    experience: [
-      ...(formData.experience ?? []),
-      { college: "", startingYear: "", endingYear: "" },
-    ],
-  });
-};
-
-const removeExperience = (index: number) => {
-  const updatedExperience = (formData.experience ?? []).filter((_, i) => i !== index);
-  setFormData({ ...formData, experience: updatedExperience });
-};
-
-//--------------------chamber------------------chamber-------------------------chamber----------
-
-const handleChamberChange = (
-  index: number,
-  field: keyof Chamber, // ✅ Use proper casing (capitalized type name)
-  value: string
-) => {
-  const updatedChamber = [...(formData.chamber ?? [])];
-  updatedChamber[index] = {
-    ...updatedChamber[index],
-    [field]: value,
+  const handleProfilePhotoChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          setFormData({ ...formData, profilePhoto: event.target.result as string });
+        }
+      };
+      reader.readAsDataURL(file);
+    }
   };
-  setFormData({ ...formData, chamber: updatedChamber });
-};
-
-const addChamber = () => {
-  setFormData({
-    ...formData,
-    chamber: [...(formData.chamber ?? []), { place: "", day: "", time: "" }],
-  });
-};
-
-const removeChamber = (index: number) => {
-  const updatedChamber = (formData.chamber ?? []).filter((_, i) => i !== index);
-  setFormData({ ...formData, chamber: updatedChamber });
-};
-
-
-  // const saveDegree = async () => {
-  //   try {
-  //     const response = await fetch("/api/save-degree", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({ degree: formData.degree }),
-  //     });
-
-  //     if (response.ok) {
-  //       alert("Degree information saved successfully!");
-  //     } else {
-  //       alert("Failed to save degree information.");
-  //     }
-  //   } catch (error) {
-  //     alert("An error occurred while saving degree information.");
-  //   }
-  // };
 
   const handleGalleryUpload = (e: ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files ?? []);
-    const fileURLs = files.map((file) => URL.createObjectURL(file));
-    setNewGalleryImages((prev) => [...prev, ...fileURLs]);
-  };
-  
-  const addImageToGallery = (img: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      gallery: [...(prev.gallery ?? []), img], // null-safe
-    }));
-    setNewGalleryImages((prev) => prev.filter((i) => i !== img));
-  };
-  
-  const removeGalleryImage = (index: number) => {
-    const updatedGallery = (formData.gallery ?? []).filter((_, i) => i !== index);
-    setFormData({ ...formData, gallery: updatedGallery });
-  };
-  
-  const handleProfilePhotoChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] ?? null;
-    if (file) {
-      const previewUrl = URL.createObjectURL(file);
-      setNewProfilePhoto(previewUrl);
+    const files = e.target.files;
+    if (files) {
+      const newImages: string[] = [];
+      Array.from(files).forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          if (event.target?.result) {
+            newImages.push(event.target.result as string);
+            if (newImages.length === files.length) {
+              setFormData({ ...formData, gallery: [...formData.gallery, ...newImages] });
+            }
+          }
+        };
+        reader.readAsDataURL(file);
+      });
     }
   };
-  
-  const applyNewProfilePhoto = () => {
-    if (newProfilePhoto) {
-      setFormData((prev) => ({
-        ...prev,
-        profilePhoto: newProfilePhoto,
-      }));
-      setNewProfilePhoto(null);
-    }
-  };
-  
 
-  const fields = [
-    { label: "Name", key: "name" },
-    { label: "Phone Number", key: "phoneNo" },
-    { label: "Optional Email", key: "optionalEmail" },
-    { label: "Register ID", key: "registerId" },
-    { label: "Specialization", key: "specialization" },
-    { label: "MBBS College", key: "mbbsCollege" },
-  ];
+  const removeGalleryImage = (index: number) => {
+    setFormData({ ...formData, gallery: formData.gallery.filter((_, i) => i !== index) });
+  };
+
+  // ✅ Final form submit
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // ✅ Simple validation
+    if (!formData.name || !formData.email || !formData.specialization) {
+      alert("Name, email, and specialization are required.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/users/${userId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update profile");
+      }
+
+      const data = await response.json();
+      console.log("Updated user:", data);
+      alert("Profile saved successfully!");
+    } catch (error) {
+      console.error("Error updating user:", error);
+      alert("An error occurred while saving the profile.");
+    }
+  };
+  
 
   return (
-    <div className="max-w-6xl mx-auto p-6 bg-white rounded-xl shadow-md mt-10 space-y-8">
-    <h1 className="text-2xl font-bold text-center text-gray-800">Edit Doctor Profile</h1>
-  
-    {/* Email - Non-editable */}
-    <div className="flex flex-col sm:flex-row items-center gap-4">
-      <label className="w-full sm:w-1/3 font-medium text-gray-700">Email:</label>
-      <input
-        type="text"
-        value={formData.email}
-        disabled
-        className="flex-1 px-4 py-2 bg-gray-100 text-gray-800 border border-gray-300 rounded"
-      />
-    </div>
-  
-    {/* Editable Fields */}
-    {fields.map(({ label, key }) => (
-      <div key={key} className="flex flex-col sm:flex-row items-center gap-4">
-        <label className="w-full sm:w-1/3 font-medium text-gray-700">{label}:</label>
+    <div className="max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-md">
+      <h1 className="text-2xl font-bold text-center mb-6">Doctor Profile Editor</h1>
+    
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Basic Information Section */}
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <h2 className="text-xl font-semibold mb-4">Basic Information</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+       
+
+              <label className="block text-2xl text-blue-500 font-medium mb-1">Name : </label>
+             <div className="text-2xl font-semibold ">
+            DR.  {user?.name}
+             </div>
+            </div>
+            
+            <div>
+              <label className="block text-2xl font-medium mb-1 ">Email</label>
+              <div className="text-xl italic ">
+              {user?.email}
+             </div>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium mb-1">Phone Number*</label>
+              <div className="text-xl italic ">
+              {user?.email}
+             </div>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium mb-1">Optional Email</label>
+              <input
+                type="email"
+                name="optionalEmail"
+                value={formData.optionalEmail}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium mb-1">Register ID*</label>
+              <input
+                type="text"
+                name="registerId"
+                value={formData.registerId}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+                required
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium mb-1">Specialization*</label>
+              <input
+                type="text"
+                name="specialization"
+                value={formData.specialization}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+                required
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium mb-1">MBBS College*</label>
+              <input
+                type="text"
+                name="mbbsCollege"
+                value={formData.mbbsCollege}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+                required
+              />
+            </div>
+          </div>
+          
+          <div className="mt-4">
+            <label className="block text-sm font-medium mb-1">Profile Photo</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleProfilePhotoChange}
+              className="w-full p-2 border rounded"
+            />
+            {formData.profilePhoto && (
+              <img
+                src={formData.profilePhoto}
+                alt="Profile"
+                className="mt-2 w-32 h-32 object-cover rounded border"
+              />
+            )}
+          </div>
+        </div>
+        
+   {/* Degrees Section */}
+<div className="bg-gray-50 p-4 rounded-lg">
+  <h2 className="text-xl font-semibold mb-4">Degrees</h2>
+
+  {(formData.degrees || []).map((degree, index) => (
+    <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+      <div>
+        <label className="block text-sm font-medium mb-1">Degree Name</label>
         <input
           type="text"
-          value={formData[key]  || ""}
-          onChange={(e) => handleInputChange(key, e.target.value)}
-          disabled={!editFields[key]}
-          className={`flex-1 px-4 py-2 border rounded text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 ${editFields[key] ? "border-blue-500 bg-white" : "bg-gray-100 border-gray-300 " }`}
+          value={degree.name}
+          onChange={(e) => handleDegreeChange(index, "name", e.target.value)}
+          className="w-full p-2 border rounded"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium mb-1">College</label>
+        <input
+          type="text"
+          value={degree.college}
+          onChange={(e) => handleDegreeChange(index, "college", e.target.value)}
+          className="w-full p-2 border rounded"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium mb-1">Year</label>
+        <input
+          type="text"
+          value={degree.year}
+          onChange={(e) => handleDegreeChange(index, "year", e.target.value)}
+          className="w-full p-2 border rounded"
+        />
+      </div>
+      <div className="flex items-end">
+        <button
+          type="button"
+          onClick={() => removeDegree(index)}
+          className="w-full px-3 py-2 bg-red-500 text-white rounded"
+        >
+          Remove
+        </button>
+      </div>
+    </div>
+  ))}
+
+  <button
+    type="button"
+    onClick={addDegree}
+    className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
+  >
+    Add Degree
+  </button>
+</div>
+
+{/* Work Section */}
+<div className="bg-gray-50 p-4 rounded-lg">
+  <h2 className="text-xl font-semibold mb-4">Work Information</h2>
+
+  {formData.work?.map((work, index) => (
+    <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+      <div>
+        <label className="block text-sm font-medium mb-1">Institution</label>
+        <input
+          type="text"
+          value={work.college}
+          onChange={(e) => handleWorkChange(index, "college", e.target.value)}
+          className="w-full p-2 border rounded"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium mb-1">Days</label>
+        <input
+          type="text"
+          value={work.day}
+          onChange={(e) => handleWorkChange(index, "day", e.target.value)}
+          className="w-full p-2 border rounded"
+          placeholder="e.g., Monday to Friday"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium mb-1">Time</label>
+        <input
+          type="text"
+          value={work.time}
+          onChange={(e) => handleWorkChange(index, "time", e.target.value)}
+          className="w-full p-2 border rounded"
+          placeholder="e.g., 9am-5pm"
+        />
+      </div>
+      <div className="flex items-end">
+        <button
+          type="button"
+          onClick={() => removeWork(index)}
+          className="w-full px-3 py-2 bg-red-500 text-white rounded"
+        >
+          Remove
+        </button>
+      </div>
+    </div>
+  ))}
+
+  <button
+    type="button"
+    onClick={addWork}
+    className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
+  >
+    Add Work Information
+  </button>
+</div>
+
+{/* Experience Section */}
+<div className="bg-gray-50 p-4 rounded-lg">
+  <h2 className="text-xl font-semibold mb-4">Professional Experience</h2>
+
+  {formData.experience?.map((exp, index) => (
+    <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+      <div>
+        <label className="block text-sm font-medium mb-1">Institution</label>
+        <input
+          type="text"
+          value={exp.college}
+          onChange={(e) => handleExperienceChange(index, "college", e.target.value)}
+          className="w-full p-2 border rounded"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium mb-1">Starting Year</label>
+        <input
+          type="text"
+          value={exp.startingYear}
+          onChange={(e) => handleExperienceChange(index, "startingYear", e.target.value)}
+          className="w-full p-2 border rounded"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium mb-1">Ending Year</label>
+        <input
+          type="text"
+          value={exp.endingYear}
+          onChange={(e) => handleExperienceChange(index, "endingYear", e.target.value)}
+          className="w-full p-2 border rounded"
+        />
+      </div>
+      <div className="flex items-end">
+        <button
+          type="button"
+          onClick={() => removeExperience(index)}
+          className="w-full px-3 py-2 bg-red-500 text-white rounded"
+        >
+          Remove
+        </button>
+      </div>
+    </div>
+  ))}
+
+  <button
+    type="button"
+    onClick={addExperience}
+    className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
+  >
+    Add Experience
+  </button>
+</div>
+
+{/* Chamber Section */}
+<div className="bg-gray-50 p-4 rounded-lg">
+  <h2 className="text-xl font-semibold mb-4">Chamber Details</h2>
+
+  {formData.chamber?.map((chamber, index) => (
+    <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+      <div>
+        <label className="block text-sm font-medium mb-1">Place</label>
+        <input
+          type="text"
+          value={chamber.place}
+          onChange={(e) => handleChamberChange(index, "place", e.target.value)}
+          className="w-full p-2 border rounded"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium mb-1">Days</label>
+        <input
+          type="text"
+          value={chamber.day}
+          onChange={(e) => handleChamberChange(index, "day", e.target.value)}
+          className="w-full p-2 border rounded"
+          placeholder="e.g., Monday to Friday"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium mb-1">Time</label>
+        <input
+          type="text"
+          value={chamber.time}
+          onChange={(e) => handleChamberChange(index, "time", e.target.value)}
+          className="w-full p-2 border rounded"
+          placeholder="e.g., 9am-5pm"
+        />
+      </div>
+      <div className="flex items-end">
+        <button
+          type="button"
+          onClick={() => removeChamber(index)}
+          className="w-full px-3 py-2 bg-red-500 text-white rounded"
+        >
+          Remove
+        </button>
+      </div>
+    </div>
+  ))}
+
+  <button
+    type="button"
+    onClick={addChamber}
+    className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
+  >
+    Add Chamber Details
+  </button>
+</div>
+
+{/* Gallery Section */}
+<div className="bg-gray-50 p-4 rounded-lg">
+  <h2 className="text-xl font-semibold mb-4">Gallery</h2>
+
+  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+    {formData.gallery?.map((image, index) => (
+      <div key={index} className="relative">
+        <img
+          src={image}
+          alt={`Gallery ${index + 1}`}
+          className="w-full h-48 object-cover rounded border"
         />
         <button
-          onClick={() => toggleEdit(key)}
-          className={`mt-2 sm:mt-0 px-4 py-2 w-50 sm:w-30 text-white rounded ${editFields[key] ? "bg-green-600" : "bg-blue-600"}`}
+          type="button"
+          onClick={() => removeGalleryImage(index)}
+          className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
         >
-          {editFields[key] ? "Save" : "Edit"}
+          ×
         </button>
       </div>
     ))}
-  
-    {/* Profile Photo Upload */}
-    <div className="space-y-2">
-      <label className="block font-medium text-gray-700">Profile Photo:</label>
-      {formData.profilePhoto && (
-        <img src={formData.profilePhoto} alt="Profile" className="w-32 h-32 object-cover rounded border" />
-      )}
-      <input type="file" accept="image/*" onChange={handleProfilePhotoChange} />
-      {newProfilePhoto && (
-        <div className="mt-2">
-          <img src={newProfilePhoto} alt="Preview" className="w-32 h-32 object-cover rounded border" />
-          <button onClick={applyNewProfilePhoto} className="mt-1 px-3 py-1 bg-green-600 text-white rounded">Apply</button>
-        </div>
-      )}
-    </div>
-  
-    {/* Degree Section */}
-    <div>
-      <label className="block font-medium text-gray-700 mb-2">Degrees:</label>
-      {formData.degree?.map((deg, idx) => (
-        <div key={idx} className="flex flex-col sm:flex-row gap-2 items-center mb-2 text-center">
-          <input
-            type="text"
-            placeholder="Degree Name"
-            value={deg.name || ""}
-            onChange={(e) => handleDegreeChange(idx, "name", e.target.value)}
-            className="w-full sm:w-60 px-4 py-2 border border-gray-300 rounded text-gray-800"
-          />
-          <input
-            type="text"
-            placeholder="College Name"
-            value={deg.college || ""}
-            onChange={(e) => handleDegreeChange(idx, "college", e.target.value)}
-            className="sm:flex-1 w-full px-4 py-2 border border-gray-300 rounded text-gray-800"
-          />
-          <input
-            type="text"
-            placeholder="Passing Year"
-            value={deg.year || ""}
-            onChange={(e) => handleDegreeChange(idx, "year", e.target.value)}
-            className="w-full sm:w-60 px-4 py-2 border border-gray-300 rounded text-gray-800"
-          />
-          <button
-            onClick={() => removeDegree(idx)}
-            className="px-2 py-1 bg-red-500 text-white rounded"
-          >
-            Remove
-          </button>
-        </div>
-      ))}
-      <button
-        onClick={addDegree}
-        className="mt-2 px-4 py-2 bg-blue-600 text-white rounded"
-      >
-        Add Degree
-      </button>
-    </div>
-  
-    {/* Work Section */}
-    <div>
-      <label className="block font-medium text-gray-700 mb-2">Work Section:</label>
-      {formData.work?.map((wk, idx) => (
-        <div key={idx} className="flex flex-col sm:flex-row gap-4 items-center mb-2">
-          <input
-            type="text"
-            placeholder="College Name"
-            value={wk.college || ""}
-            onChange={(e) => handleWorkChange(idx, "college", e.target.value)}
-            className="w-full sm:w-60 px-4 py-2 border border-gray-300 rounded text-gray-800"
-          />
-          <input
-            type="text"
-            placeholder="Day: SAT to MON"
-            value={wk.day || ""}
-            onChange={(e) => handleWorkChange(idx, "day", e.target.value)}
-            className="sm:flex-1 w-full px-4 py-2 border border-gray-300 rounded text-gray-800"
-          />
-          <input
-            type="text"
-            placeholder="Time"
-            value={wk.time || ""}
-            onChange={(e) => handleWorkChange(idx, "time", e.target.value)}
-            className="w-full sm:w-60 px-4 py-2 border border-gray-300 rounded text-gray-800"
-          />
-          <button
-            onClick={() => removeWork(idx)}
-            className="px-2 py-1 bg-red-500 text-white rounded"
-          >
-            Remove
-          </button>
-        </div>
-      ))}
-      <button
-        onClick={addWork}
-        className="mt-2 px-4 py-2 bg-blue-600 text-white rounded"
-      >
-        Add Work
-      </button>
-    </div>
-  
-    {/* Experience Section */}
-    <div>
-      <label className="block font-medium text-gray-700 mb-2">Experience:</label>
-      {formData.experience?.map((exp, idx) => (
-        <div key={idx} className="flex flex-col sm:flex-row gap-4 items-center mb-2">
-          <input
-            type="text"
-            placeholder="College Name"
-            value={exp.college || ""}
-            onChange={(e) => handleDegreeChange(idx, "college", e.target.value)}
-            className="w-full sm:w-60 px-4 py-2 border border-gray-300 rounded text-gray-800"
-          />
-          <input
-            type="text"
-            placeholder="Starting Year"
-            value={exp.startingYear || ""}
-            onChange={(e) => handleExperienceChange(idx, "startingYear", e.target.value)}
-            className="sm:flex-1 w-full px-4 py-2 border border-gray-300 rounded text-gray-800"
-          />
-          <input
-            type="text"
-            placeholder="Ending Year"
-            value={exp.endingYear || ""}
-            onChange={(e) => handleExperienceChange(idx, "endingYear", e.target.value)}
-            className="w-full sm:w-62 px-4 py-2 border border-gray-300 rounded text-gray-800"
-          />
-          <button
-            onClick={() => removeExperience(idx)}
-            className="px-2 py-1 bg-red-500 text-white rounded"
-          >
-            Remove
-          </button>
-        </div>
-      ))}
-      <button
-        onClick={addExperience}
-        className="mt-2 px-4 py-2 bg-blue-600 text-white rounded"
-      >
-        Add Experience
-      </button>
-    </div>
-  
-    {/* Chamber Section */}
-    <div>
-      <label className="block font-medium text-gray-700 mb-2">Chamber Details:</label>
-      {formData.chamber?.map((cham, idx) => (
-        <div key={idx} className="flex flex-col sm:flex-row gap-4 items-center mb-2">
-          <input
-            type="text"
-            placeholder="Place"
-            value={cham.place || ""}
-            onChange={(e) => handleDegreeChange(idx, "place", e.target.value)}
-            className="w-full sm:w-60 px-4 py-2 border border-gray-300 rounded text-gray-800"
-          />
-          <input
-            type="text"
-            placeholder="Day: SAT to WED"
-            value={cham.day || ""}
-            onChange={(e) => handleDegreeChange(idx, "day", e.target.value)}
-            className="sm:flex-1 w-full px-4 py-2 border border-gray-300 rounded text-gray-800"
-          />
-          <input
-            type="text"
-            placeholder="Time: 7.00pm to 10pm"
-            value={cham.time || ""}
-            onChange={(e) => handleChamberChange(idx, "time", e.target.value)}
-            className="w-full sm:w-60 px-4 py-2 border border-gray-300 rounded text-gray-800"
-          />
-          <button
-            onClick={() => removeChamber(idx)}
-            className="px-2 py-1 bg-red-500 text-white rounded"
-          >
-            Remove
-          </button>
-        </div>
-      ))}
-      <button
-        onClick={addChamber}
-        className="mt-2 px-4 py-2 bg-blue-600 text-white rounded"
-      >
-        Create Chamber
-      </button>
-    </div>
-  
-    {/* Gallery Section */}
-    <div>
-  <label className="block font-medium text-gray-700 mb-2">Gallery:</label>
-  {(formData.gallery?.length || 0) > 0 && (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-      {formData.gallery?.map((img, idx) => (
-        <div key={idx} className="relative group">
-          <img
-            src={img}
-            alt={`gallery-${idx}`}
-            className="w-full h-32 object-cover rounded border"
-          />
-          <button
-            onClick={() => removeGalleryImage(idx)}
-            className="absolute top-1 right-1 px-2 py-1 text-xs bg-red-600 text-white rounded opacity-80 hover:opacity-100"
-          >
-            ✕
-          </button>
-        </div>
-      ))}
-    </div>
-  )}
-
-  <input
-    type="file"
-    multiple
-    accept="image/*"
-    onChange={handleGalleryUpload}
-    className="mb-4"
-  />
-
-  {newGalleryImages.length > 0 && (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      {newGalleryImages.map((img, idx) => (
-        <div key={idx} className="relative">
-          <img
-            src={img}
-            alt={`preview-${idx}`}
-            className="w-full h-32 object-cover rounded border"
-          />
-          <button
-            onClick={() => addImageToGallery(img)}
-            className="absolute bottom-1 left-1 px-2 py-1 text-xs bg-green-600 text-white rounded"
-          >
-            Add
-          </button>
-        </div>
-      ))}
-    </div>
-  )}
-</div>
   </div>
-  
-      );
+
+  <div>
+    <label className="block text-sm font-medium mb-1">Add Gallery Images</label>
+    <input
+      type="file"
+      multiple
+      accept="image/*"
+      onChange={handleGalleryUpload}
+      className="w-full p-2 border rounded"
+    />
+  </div>
+</div>
+
+{/* Submit Button */}
+<div className="text-center">
+  <button
+    type="submit"
+    className="px-6 py-3 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600"
+  >
+    Save Profile
+  </button>
+</div>
+
+      </form>
+    </div>
+  );
 }
