@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema } from "mongoose";
 import crypto from "crypto";
-import { Degree, Work, Experience, Chamber } from "@/types/doctor";
+import { Degree, Work, Experience, Chamber, Education } from "@/types/doctor";
 
 // Contact message interface
 interface Contact {
@@ -27,8 +27,18 @@ export interface IUser extends Document {
   registerId?: string;
   specialization?: string;
   profilePhoto?: string;
+
+  ContactNo?: string;
+  bio?: string;
+  aboutPicture?: string;
+  fbLink?: string;
+  instagram?: string;
+  Linkedin?: string;
+  youTubeLink?: string;
+
   gallery?: string[];
   degrees?: Degree[];
+  education?: Education[]; // ✅ changed from EduCation
   mbbsCollege?: string;
   work?: Work[];
   experience?: Experience[];
@@ -48,10 +58,17 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
 
     optionalEmail: { type: String, required: false, unique: true, sparse: true },
     registerId: { type: String, required: false, unique: true, sparse: true },
+    bio: { type: String, required: false },
+    aboutPicture: { type: String, required: false },
+    
     specialization: { type: String, required: false },
     profilePhoto: { type: String, required: false },
     gallery: { type: [String], default: [] },
 
+
+
+
+    
     degrees: {
       type: [
         {
@@ -62,16 +79,28 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
       ],
       default: [],
     },
-    
+
+    education: { // ✅ fixed name
+      type: [
+        {
+          year: { type: String },
+          examName: { type: String },
+          institute: { type: String },
+        },
+      ],
+      default: [],
+    },
 
     mbbsCollege: { type: String, required: false },
 
     work: {
       type: [
         {
+          role: { type: String, required: false }, // ✅ added
           college: { type: String, required: false },
           day: { type: String, required: false },
           time: { type: String, required: false },
+          collegePhoneNumber: { type: String, required: false }, // ✅ added
         },
       ],
       default: [],
@@ -80,6 +109,7 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
     experience: {
       type: [
         {
+          role: { type: String, required: false }, // ✅ added
           college: { type: String, required: false },
           startingYear: { type: String, required: false },
           endingYear: { type: String, required: false },
@@ -94,6 +124,7 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
           place: { type: String, required: false },
           day: { type: String, required: false },
           time: { type: String, required: false },
+          bookContact: { type: String, required: false }, // ✅ added
         },
       ],
       default: [],
@@ -119,7 +150,10 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
 // ✅ Generate Verification Token Method
 UserSchema.methods.getVerificationToken = function (): string {
   const verificationToken = crypto.randomBytes(20).toString("hex");
-  this.verifyToken = crypto.createHash("sha256").update(verificationToken).digest("hex");
+  this.verifyToken = crypto
+    .createHash("sha256")
+    .update(verificationToken)
+    .digest("hex");
   this.verifyTokenExpire = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
   return verificationToken;
 };

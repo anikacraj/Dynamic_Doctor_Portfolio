@@ -6,6 +6,11 @@ export interface Degree {
     year?: string;
   }
   
+  export interface Education {
+    year?: string;
+    examName?: string;
+    institute?: string;
+  }
   export interface Work {
     college?: string;
     day?: string;
@@ -32,6 +37,17 @@ export interface Degree {
     optionalEmail?: string;
     registerId?: string;
     specialization?: string;
+
+
+    ContactNo:string;
+    bio:string;
+    aboutPicture:string;
+    fbLink:string;
+    instagram:string;
+    Linkedin:string;
+    youTubeLink:string;
+
+    
     mbbsCollege?: string;
     degree?: Degree[];
     work?: Work[];

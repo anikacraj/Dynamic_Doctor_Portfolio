@@ -12,10 +12,20 @@ interface DoctorProfile {
   specialization: string;
   mbbsCollege: string;
   profilePhoto: string;
+
+  ContactNo: string;
+  bio: string;
+  aboutPicture: string;
+  fbLink: string;
+  instagram: string;
+  Linkedin: string;
+  youTubeLink: string;
+ 
   degrees: { name: string; college: string; year: string }[];
-  work: { college: string; day: string; time: string }[];
-  experience: { college: string; startingYear: string; endingYear: string }[];
-  chamber: { place: string; day: string; time: string }[];
+  education: { year: string; examName: string; institute: string }[];
+  work: { role: string; college: string; day: string; time: string; collegePhoneNumber: string }[];
+  experience: { role: string; college: string; startingYear: string; endingYear: string }[];
+  chamber: { place: string; day: string; time: string; bookContact: string }[];
   gallery: string[];
 }
 
@@ -42,54 +52,45 @@ export async function GET(
 
 
 
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { userId: string } }
-) {
-  await dbConnect();
-
+export async function PUT(request: NextRequest, context: { params: { userId: string } }) {
   try {
-    const body: DoctorProfile = await req.json();
-    
-    // Validate required fields
-    if (!body.name || !body.email || !body.specialization) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
-    }
+    const { userId } = context.params; // ✅ correct way to get userId
+    const data = await request.json();
+
+    const updateFields = { ...data };
+
+    // ❗Optional: Remove undefined fields to avoid issues
+    Object.keys(updateFields).forEach(
+      (key) => updateFields[key] === undefined && delete updateFields[key]
+    );
 
     const updatedUser = await userModel.findByIdAndUpdate(
-      params.userId,
-      {
-        $set: {
-          name: body.name,
-          email: body.email,
-          phoneNo: body.phoneNo,
-          optionalEmail: body.optionalEmail,
-          registerId: body.registerId,
-          specialization: body.specialization,
-          mbbsCollege: body.mbbsCollege,
-          profilePhoto: body.profilePhoto,
-          degrees: body.degrees,
-          work: body.work,
-          experience: body.experience,
-          chamber: body.chamber,
-          gallery: body.gallery,
-        },
-      },
-      { new: true }
-    ).select("-password");
+      userId,
+      { $set: updateFields },
+      { new: true, runValidators: true }
+    );
 
     if (!updatedUser) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    return NextResponse.json(updatedUser);
-  } catch (error) {
+    return NextResponse.json(
+      { message: "User updated successfully", user: updatedUser },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    if (error.code === 11000) {
+      // ✅ Handle duplicate key error for unique fields
+      const field = Object.keys(error.keyPattern)[0];
+      return NextResponse.json(
+        { error: `Duplicate value for unique field: ${field}` },
+        { status: 400 }
+      );
+    }
+
     console.error("Error updating user:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Internal Server Error" },
       { status: 500 }
     );
   }
