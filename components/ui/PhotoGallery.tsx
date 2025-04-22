@@ -39,12 +39,12 @@ export default function PhotoGallery() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12 ">
-      <h1 className="text-3xl sm:text-4xl  font-bold text-center mb-10">📸 Doctor’s Gallery</h1>
+      <h1 className="text-2xl sm:text-4xl  font-bold text-center mb-10">📸 Doctor’s Gallery</h1>
 
       {/* Image Grid */}
       <motion.div
         layout
-        className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6 border-2 border-white rounded-2xl p-3"
+        className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6 border-2 p-4 border-white rounded-2xl "
       >
         {displayedImages.map((img) => (
           <motion.div

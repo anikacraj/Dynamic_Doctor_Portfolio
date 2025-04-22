@@ -91,12 +91,16 @@ export default function AboutPage() {
               { label: 'Experience', value: 'experience' },
             ].map((tab) => (
               <Tabs.Trigger
-                key={tab.value}
-                value={tab.value}
-                className="text-left text-xl font-semibold text-white hover:text-accent transition-all px-4 py-3 rounded-lg data-[state=active]:bg-[#232329] data-[state=active]:text-accent"
-              >
-                {tab.label}
-              </Tabs.Trigger>
+              key={tab.value}
+              value={tab.value}
+              className="text-left text-xl font-semibold px-4 py-3 rounded-lg transition-all
+                text-gray-700 hover:text-blue-600 
+                data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700
+                dark:text-white dark:hover:text-accent 
+                dark:data-[state=active]:bg-[#232329] dark:data-[state=active]:text-accent"
+            >
+              {tab.label}
+            </Tabs.Trigger>
             ))}
           </Tabs.List>
 

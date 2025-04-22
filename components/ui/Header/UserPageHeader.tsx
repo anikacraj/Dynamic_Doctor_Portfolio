@@ -17,11 +17,11 @@ export default function UserPageHeader() {
   
     if (!session?.user?.id) return null;
   return (
-    <header className='py-8 xl:py-12 text-white'>
+    <header className='py-8 xl:py-12 text-white '>
       <div className='container mx-auto flex justify-between items-center'>
         <Link href="/">
-          <h1 className='text-4xl font-semibold '>
-          🩺DR <span className='text-accent text-blue-300'>Port.</span>
+          <h1 className='text-4xl font-bold  text-blue-500 dark:text-white'>
+          🩺DR <span className='text-accent text-blue-700 dark:text-blue-400'>Port.</span>
           </h1>
 
         </Link>
@@ -36,7 +36,7 @@ export default function UserPageHeader() {
             <Button
               variant="outline"
               size="lg"
-              className="text-cyan-200 text-lg hover:text-white dark:hover:text-white"
+              className="text-cyan-800 dark:text-cyan-300 text-xl hover:text-black dark:hover:text-white"
             >
               Chamber
             </Button>

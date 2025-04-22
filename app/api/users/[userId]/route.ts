@@ -26,6 +26,7 @@ interface DoctorProfile {
   work: { role: string; college: string; day: string; time: string; collegePhoneNumber: string }[];
   experience: { role: string; college: string; startingYear: string; endingYear: string }[];
   chamber: { place: string; day: string; time: string; bookContact: string }[];
+  contacts:{name:string;email:string;address:string;phoneNo:string;message:string}[];
   gallery: string[];
 }
 

@@ -14,9 +14,9 @@ export default function Drawer({ links }: { links: { name: string; path: string 
   return (
     <>
       {/* Toggle Button */}
-      <button onClick={toggleDrawer} className="p-2 text-2xl">
+      <button onClick={toggleDrawer} className="p-2 text-2xl text-black dark:text-white">
         {/* <CiMenuFries /> */}
-        hello
+        ☰
       </button>
 
       {/* Overlay */}

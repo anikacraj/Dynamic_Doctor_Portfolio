@@ -23,18 +23,28 @@ export default async function ProfilePage() {
     <section className="h-full">
       <div className="container mx-auto h-full">
         <div className="flex flex-col-reverse xl:flex-row items-center justify-around xl:pt-8 xl:pb-24 xl:mt-15">
-          <div className="text-center xl:text-left font-serif">
-            <span className="h2">Hello</span>
-            <h1 className="h1">
-              I'm DR.
-              <br />
-              <span className="text-blue-400">{user.name}</span>
-            </h1>
-            <h3 className="max-w-[500px] mb-5 text/80">
-              Specialized Lorem ipsum dolor, sit amet consectetur adipisicing elit. Voluptatum, placeat.
-            </h3>
 
-            <div className="flex flex-col xl:flex-row items-center gap-8">
+
+          <div className="text-center xl:text-left font-serif">
+           <div className="text-center xl:text-left font-serif space-y-4">
+  {/* Greeting */}
+  <span className="text-2xl text-gray-500 dark:text-gray-400 tracking-wide">Hello & welcome</span>
+
+  {/* Name Introduction */}
+  <h1 className="text-4xl md:text-5xl font-bold leading-tight text-gray-900 dark:text-white">
+    I'm Dr. <br />
+    <span className="text-blue-500 dark:text-accent">{user.name}</span>
+  </h1>
+
+  {/* Professionally Styled Bio */}
+  <p className="max-w-xl text-lg  leading-relaxed text-gray-700 dark:text-gray-300 border-l-4 border-blue-400 pl-4 italic">
+    Passionate about healing and driven by compassion, I specialize in <span className="font-semibold text-blue-600 dark:text-accent">{user.specialization || "patient-centered care"}</span>. With years of experience, I’m dedicated to improving lives through precise diagnosis and personalized treatment.
+  </p>
+</div>
+
+
+
+            <div className="flex flex-col xl:flex-row items-center gap-8 mt-3">
               <Link
                 href="#contact"
                 className="uppercase rounded-lg flex items-center gap-2 border-1 border-amber-500 p-4"

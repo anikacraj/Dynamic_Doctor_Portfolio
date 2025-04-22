@@ -60,8 +60,12 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
     registerId: { type: String, required: false, unique: true, sparse: true },
     bio: { type: String, required: false },
     aboutPicture: { type: String, required: false },
-    
+    ContactNo: { type: String, required: false , unique:true },
     specialization: { type: String, required: false },
+    Linkedin: { type: String, required: false },
+    fbLink: { type: String, required: false },
+    instagram: { type: String, required: false },
+    youTubeLink: { type: String, required: false },
     profilePhoto: { type: String, required: false },
     gallery: { type: [String], default: [] },
 

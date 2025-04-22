@@ -2,6 +2,7 @@
 import { useState, ChangeEvent, useEffect } from "react";
 import { useParams } from "next/navigation";
 
+
 interface DoctorProfile {
   name: string;
   email: string;
@@ -210,6 +211,9 @@ export default function DoctorProfileEditor() {
     setFormData(prev => ({ ...prev, bio: e.target.value }));
   };
 
+  const handleContactNoChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({ ...prev, ContactNo: e.target.value }));
+  };
 
   const handleSocialMediaChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -297,9 +301,15 @@ export default function DoctorProfileEditor() {
               <input type="email" name="optionalEmail" value={formData.optionalEmail || ""} onChange={handleChange} className="w-full p-2 border rounded" />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Contact Number*</label>
-              <input type="number" name="ContactNo" value={formData.ContactNo || ""} onChange={handleChange} className="w-full p-2 border rounded" />
-            </div>
+  <label className="block text-sm font-medium mb-1">Contact Number*</label>
+  <input
+    type="number"
+    name="ContactNo"
+    value={formData.ContactNo || ""}
+    onChange={handleContactNoChange}
+    className="w-full p-2 border rounded"
+  />
+</div>
             <div>
               <label className="block text-sm font-medium mb-1">Register ID*</label>
               <input type="text" name="registerId" value={formData.registerId || ""} onChange={handleChange} className="w-full p-2 border rounded" required />
@@ -683,7 +693,7 @@ export default function DoctorProfileEditor() {
         type="url"
         name="fbLink"
         value={formData.fbLink || ""}
-        onChange={handleChange}
+        onChange={handleSocialMediaChange}
         placeholder="https://facebook.com/yourprofile"
         className="w-full p-2 border rounded"
       />
@@ -701,7 +711,7 @@ export default function DoctorProfileEditor() {
         type="url"
         name="instagram"
         value={formData.instagram || ""}
-        onChange={handleChange}
+        onChange={handleSocialMediaChange}
         placeholder="https://instagram.com/yourprofile"
         className="w-full p-2 border rounded"
       />
@@ -717,9 +727,9 @@ export default function DoctorProfileEditor() {
       </label>
       <input
         type="url"
-        name="Linkedin"
+        name="linkedin"
         value={formData.Linkedin || ""}
-        onChange={handleChange}
+        onChange={handleSocialMediaChange}
         placeholder="https://linkedin.com/in/yourprofile"
         className="w-full p-2 border rounded"
       />
@@ -737,7 +747,7 @@ export default function DoctorProfileEditor() {
         type="url"
         name="youTubeLink"
         value={formData.youTubeLink || ""}
-        onChange={handleChange}
+        onChange={handleSocialMediaChange}
         placeholder="https://youtube.com/yourchannel"
         className="w-full p-2 border rounded"
       />
