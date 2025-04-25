@@ -1,7 +1,9 @@
 "use client";
-import { useState, ChangeEvent, useEffect } from "react";
+import { useState, ChangeEvent, useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
-
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { motion } from "framer-motion"
+import { Plus, Trash2 } from "lucide-react"; 
 
 interface DoctorProfile {
   name: string;
@@ -55,6 +57,7 @@ export default function DoctorProfileEditor() {
   const { userId } = useParams();
   const [user, setUser] = useState<DoctorProfile | null>(null);
   const [formData, setFormData] = useState<DoctorProfile>(initialFormState);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     if (!userId) return;
@@ -280,480 +283,520 @@ export default function DoctorProfileEditor() {
       );
     }
   };
-
+  const workRef = useRef(null);
+  const educationRef = useRef(null);
+  const degreeRef = useRef(null);
+  const galleryRef = useRef(null);
+  const experienceRef = useRef(null);
+  const chamberRef = useRef(null);
+  const scrollToSection = (ref) => {
+    if (ref.current) {
+      ref.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
   return (
-    <div className="max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold text-center mb-6">Doctor Profile Editor</h1>
+<div className="sm:flex justify-center sm:gap-4 mb-3">
+  <div className="w-full sm:w-1/3 lg:w-1/4">
+    <div className="w-full bg-gray-100  dark:bg-gray-900 rounded-lg p-4 sticky top-[200px] h-fit shadow">
+      <h2 className="text-xl font-bold mb-4">Dashboard</h2>
+      <ul className="space-y-4 ">
+        {/* List items */}
+        <li className="cursor-pointer flex justify-between items-center hover:bg-blue-100 dark:hover:bg-blue-900 p-2 rounded" onClick={() => scrollToSection(galleryRef)}>
+          <span className="font-semibold">Gallery</span>
+          <span className="w-6 h-6 text-sm flex items-center justify-center bg-blue-500 text-white rounded-full">
+            {(formData.gallery || []).length}
+          </span>
+        </li>
+        <li className="cursor-pointer flex justify-between items-center hover:bg-blue-100  dark:hover:bg-blue-900 p-2 rounded" onClick={() => scrollToSection(chamberRef)}>
+            <span className="font-semibold">Chamber</span>
+            <span className="w-6 h-6 text-sm flex items-center justify-center bg-green-500 text-white rounded-full">
+              {(formData.chamber || []).length}
+            </span>
+          </li>
+          <li className="cursor-pointer flex justify-between items-center hover:bg-blue-100  dark:hover:bg-blue-900 p-2 rounded" onClick={() => scrollToSection(experienceRef)}>
+            <span className="font-semibold">Experience</span>
+            <span className="w-6 h-6 text-sm flex items-center justify-center bg-purple-500 text-white rounded-full">
+              {(formData.experience || []).length}
+            </span>
+          </li>
+          <li className="cursor-pointer flex justify-between items-center hover:bg-blue-100  dark:hover:bg-blue-900 p-2 rounded" onClick={() => scrollToSection(workRef)}>
+            <span className="font-semibold">Work</span>
+            <span className="w-6 h-6 text-sm flex items-center justify-center bg-blue-500 text-white rounded-full">
+              {(formData.work || []).length}
+            </span>
+          </li>
+          <li className="cursor-pointer flex justify-between items-center hover:bg-blue-100  dark:hover:bg-blue-900 p-2 rounded" onClick={() => scrollToSection(educationRef)}>
+            <span className="font-semibold">Education</span>
+            <span className="w-6 h-6 text-sm flex items-center justify-center bg-green-500 text-white rounded-full">
+              {(formData.education || []).length}
+            </span>
+          </li>
+          <li className="cursor-pointer flex justify-between items-center hover:bg-blue-100  dark:hover:bg-blue-900 p-2 rounded" onClick={() => scrollToSection(degreeRef)}>
+            <span className="font-semibold">Degrees</span>
+            <span className="w-6 h-6 text-sm flex items-center justify-center bg-purple-500 text-white rounded-full">
+              {(formData.degrees || []).length}
+            </span>
+          </li>
+      </ul>
+    </div>
+  </div>
+
+
+  <div className="max-w-6xl mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+  <h1 className="text-2xl font-bold text-center mb-6">Doctor Profile Editor</h1>
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <h2 className="text-xl font-semibold mb-4">Basic Information</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-2xl text-blue-500 font-medium mb-1">Name : </label>
-              <div className="text-2xl font-semibold">DR. {user?.name}</div>
-            </div>
-            <div>
-              <label className="block text-2xl font-medium mb-1">Email</label>
-              <div className="text-xl italic">{user?.email}</div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Contact Email*</label>
-              <input type="email" name="optionalEmail" value={formData.optionalEmail || ""} onChange={handleChange} className="w-full p-2 border rounded" />
-            </div>
-            <div>
-  <label className="block text-sm font-medium mb-1">Contact Number*</label>
-  <input
-    type="number"
-    name="ContactNo"
-    value={formData.ContactNo || ""}
-    onChange={handleContactNoChange}
-    className="w-full p-2 border rounded"
-  />
-</div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Register ID*</label>
-              <input type="text" name="registerId" value={formData.registerId || ""} onChange={handleChange} className="w-full p-2 border rounded" required />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Specialization*</label>
-              <input type="text" name="specialization" value={formData.specialization || ""} onChange={handleChange} className="w-full p-2 border rounded" required />
-            </div>
-            {/* In your basic information section */}
-            <div className="col-span-full">
-              <label className="block text-sm font-medium mb-1">Bio</label>
-              <textarea
-                name="bio"
-                value={formData.bio || ""}
-                onChange={handleBioChange}
-                className="w-full p-2 border rounded h-32"
-                maxLength={500}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">MBBS College*</label>
-              <input type="text" name="mbbsCollege" value={formData.mbbsCollege || ""} onChange={handleChange} className="w-full p-2 border rounded" required />
-            </div>
-          </div>
-          <div className="mt-4">
-            <label className="block text-sm font-medium mb-1">Profile Photo</label>
-            <input type="file" accept="image/*" onChange={handleProfilePhotoChange} className="w-full p-2 border rounded" />
-            {formData.profilePhoto && <img src={formData.profilePhoto} alt="Profile" className="mt-2 w-32 h-32 object-cover rounded border" />}
-          </div>
-          <div className="mt-4">
-            <label className="block text-sm font-medium mb-1">About Page Photo</label>
-            <input type="file" accept="image/*" onChange={handleAboutPictureChange} className="w-full p-2 border rounded" />
-            {formData.aboutPicture && <img src={formData.aboutPicture} alt="aboutPicture" className="mt-2 w-32 h-32 object-cover rounded border" />}
-          </div>
-        </div>
+      <motion.div
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.5 }}
+  className="bg-white p-6 rounded-2xl shadow-lg ring-1 ring-zinc-200 dark:bg-gray-900"
+>
+  <h2 className="text-2xl font-bold text-zinc-800 dark:text-white mb-6">🩺 Basic Information</h2>
+
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+    <div>
+      <label className="block text-lg text-blue-600 dark:text-blue-400 font-medium mb-1">Name</label>
+      <div className="text-xl font-semibold text-zinc-900 dark:text-white">DR. {user?.name}</div>
+    </div>
+
+    <div>
+      <label className="block text-lg text-zinc-700 dark:text-zinc-300 font-medium mb-1">Email</label>
+      <div className="text-md italic text-zinc-600 dark:text-zinc-400">{user?.email}</div>
+    </div>
+
+    {/* Dynamic Input Fields */}
+    {[
+      { label: "Contact Email*", name: "optionalEmail", type: "email" },
+      { label: "Contact Number*", name: "ContactNo", type: "number", handler: handleContactNoChange },
+      { label: "Register ID*", name: "registerId", type: "text", required: true },
+      { label: "Specialization*", name: "specialization", type: "text", required: true },
+      { label: "MBBS College*", name: "mbbsCollege", type: "text", required: true },
+    ].map((field) => (
+      <div key={field.name}>
+        <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">{field.label}</label>
+        <input
+          type={field.type}
+          name={field.name}
+          value={formData[field.name] || ""}
+          onChange={field.handler || handleChange}
+          required={field.required}
+          className="w-full p-3 border rounded-xl dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
+        />
+      </div>
+    ))}
+
+    {/* Bio */}
+    <div className="col-span-full">
+      <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Bio</label>
+      <textarea
+        name="bio"
+        value={formData.bio || ""}
+        onChange={handleBioChange}
+        className="w-full p-3 border rounded-xl dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition h-32 resize-none"
+        maxLength={500}
+      />
+    </div>
+
+    {/* Profile Photo */}
+    <div>
+      <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Profile Photo</label>
+      <input
+        type="file"
+        accept="image/*"
+        onChange={handleProfilePhotoChange}
+        className="w-full p-3 rounded-xl border dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition"
+      />
+      {formData.profilePhoto && (
+        <img src={formData.profilePhoto} alt="Profile" className="mt-3 w-32 h-32 object-cover rounded-lg border" />
+      )}
+    </div>
+
+    {/* About Picture */}
+    <div>
+      <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">About Page Photo</label>
+      <input
+        type="file"
+        accept="image/*"
+        onChange={handleAboutPictureChange}
+        className="w-full p-3 rounded-xl border dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition"
+      />
+      {formData.aboutPicture && (
+        <img src={formData.aboutPicture} alt="About" className="mt-3 w-32 h-32 object-cover rounded-lg border" />
+      )}
+    </div>
+  </div>
+</motion.div>
 
         {/* Keep all other sections (Degrees, Education, Work, etc.) with the same pattern of || "" for values */}
 
         {/* Degrees Section */}
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <h2 className="text-xl font-semibold mb-4">Degrees</h2>
-          {(formData.degrees || []).map((degree, index) => (
-            <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">Degree Name</label>
-                <input
-                  type="text"
-                  value={degree.name || ""}
-                  onChange={(e) => handleDegreeChange(index, "name", e.target.value)}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">College</label>
-                <input
-                  type="text"
-                  value={degree.college || ""}
-                  onChange={(e) => handleDegreeChange(index, "college", e.target.value)}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Year</label>
-                <input
-                  type="text"
-                  value={degree.year || ""}
-                  onChange={(e) => handleDegreeChange(index, "year", e.target.value)}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div className="flex items-end">
-                <button
-                  type="button"
-                  onClick={() => removeDegree(index)}
-                  className="w-full px-3 py-2 bg-red-500 text-white rounded"
-                >
-                  Remove
-                </button>
-              </div>
-            </div>
-          ))}
-          <button
-            type="button"
-            onClick={addDegree}
-            className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
-          >
-            Add Degree
-          </button>
-        </div>
+   
+      <motion.div
+  ref={degreeRef}
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.4 }}
+  className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-lg ring-1 ring-zinc-200 dark:ring-zinc-700 mb-6"
+>
+  <h2 className="text-2xl font-semibold text-zinc-800 dark:text-white mb-4">🎓 Degrees</h2>
 
-        {/* Education Section */}
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <h2 className="text-xl font-semibold mb-4">Education</h2>
-          {(formData.education || []).map((edu, index) => (
-            <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">Year</label>
-                <input
-                  type="text"
-                  value={edu.year || ""}
-                  onChange={(e) => handleEducationChange(index, "year", e.target.value)}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Exam Name</label>
-                <input
-                  type="text"
-                  value={edu.examName || ""}
-                  onChange={(e) => handleEducationChange(index, "examName", e.target.value)}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Institute</label>
-                <input
-                  type="text"
-                  value={edu.institute || ""}
-                  onChange={(e) => handleEducationChange(index, "institute", e.target.value)}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div className="flex items-end">
-                <button
-                  type="button"
-                  onClick={() => removeEducation(index)}
-                  className="w-full px-3 py-2 bg-red-500 text-white rounded"
-                >
-                  Remove
-                </button>
-              </div>
-            </div>
-          ))}
-          <button
-            type="button"
-            onClick={addEducation}
-            className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
-          >
-            Add Education
-          </button>
-        </div>
-
-        {/* Work Section */}
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <h2 className="text-xl font-semibold mb-4">Work Information</h2>
-          {(formData.work || []).map((work, index) => (
-            <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">Role</label>
-                <input
-                  type="text"
-                  value={work.role || ""}
-                  onChange={(e) => handleWorkChange(index, "role", e.target.value)}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Institution</label>
-                <input
-                  type="text"
-                  value={work.college || ""}
-                  onChange={(e) => handleWorkChange(index, "college", e.target.value)}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Days</label>
-                <input
-                  type="text"
-                  value={work.day || ""}
-                  onChange={(e) => handleWorkChange(index, "day", e.target.value)}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Time</label>
-                <input
-                  type="text"
-                  value={work.time || ""}
-                  onChange={(e) => handleWorkChange(index, "time", e.target.value)}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Contact Number</label>
-                <input
-                  type="text"
-                  value={work.collegePhoneNumber || ""}
-                  onChange={(e) => handleWorkChange(index, "collegePhoneNumber", e.target.value)}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div className="flex items-end">
-                <button
-                  type="button"
-                  onClick={() => removeWork(index)}
-                  className="w-full px-3 py-2 bg-red-500 text-white rounded"
-                >
-                  Remove
-                </button>
-              </div>
-            </div>
-          ))}
-          <button
-            type="button"
-            onClick={addWork}
-            className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
-          >
-            Add Work
-          </button>
-        </div>
-
-        {/* Experience Section */}
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <h2 className="text-xl font-semibold mb-4">Experience</h2>
-          {(formData.experience || []).map((exp, index) => (
-            <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">Role</label>
-                <input
-                  type="text"
-                  value={exp.role || ""}
-                  onChange={(e) => handleExperienceChange(index, "role", e.target.value)}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Institution</label>
-                <input
-                  type="text"
-                  value={exp.college || ""}
-                  onChange={(e) => handleExperienceChange(index, "college", e.target.value)}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Start Year</label>
-                <input
-                  type="text"
-                  value={exp.startingYear || ""}
-                  onChange={(e) => handleExperienceChange(index, "startingYear", e.target.value)}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">End Year</label>
-                <input
-                  type="text"
-                  value={exp.endingYear || ""}
-                  onChange={(e) => handleExperienceChange(index, "endingYear", e.target.value)}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div className="flex items-end">
-                <button
-                  type="button"
-                  onClick={() => removeExperience(index)}
-                  className="w-full px-3 py-2 bg-red-500 text-white rounded"
-                >
-                  Remove
-                </button>
-              </div>
-            </div>
-          ))}
-          <button
-            type="button"
-            onClick={addExperience}
-            className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
-          >
-            Add Experience
-          </button>
-        </div>
-
-        {/* Chamber Section */}
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <h2 className="text-xl font-semibold mb-4">Chamber</h2>
-          {(formData.chamber || []).map((chamber, index) => (
-            <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">Place</label>
-                <input
-                  type="text"
-                  value={chamber.place || ""}
-                  onChange={(e) => handleChamberChange(index, "place", e.target.value)}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Days</label>
-                <input
-                  type="text"
-                  value={chamber.day || ""}
-                  onChange={(e) => handleChamberChange(index, "day", e.target.value)}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Time</label>
-                <input
-                  type="text"
-                  value={chamber.time || ""}
-                  onChange={(e) => handleChamberChange(index, "time", e.target.value)}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Contact</label>
-                <input
-                  type="text"
-                  value={chamber.bookContact || ""}
-                  onChange={(e) => handleChamberChange(index, "bookContact", e.target.value)}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div className="flex items-end">
-                <button
-                  type="button"
-                  onClick={() => removeChamber(index)}
-                  className="w-full px-3 py-2 bg-red-500 text-white rounded"
-                >
-                  Remove
-                </button>
-              </div>
-            </div>
-          ))}
-          <button
-            type="button"
-            onClick={addChamber}
-            className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
-          >
-            Add Chamber
-          </button>
-        </div>
-
-        {/* Gallery Section */}
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <h2 className="text-xl font-semibold mb-4">Gallery</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-4">
-            {(formData.gallery || []).map((image, index) => (
-              <div key={index} className="relative">
-                <img
-                  src={image}
-                  alt={`Gallery ${index + 1}`}
-                  className="w-full h-48 object-cover rounded border"
-                />
-                <button
-                  type="button"
-                  onClick={() => removeGalleryImage(index)}
-                  className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
-                >
-                  ×
-                </button>
-              </div>
-            ))}
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Add Images</label>
+  {(formData.degrees || []).map((degree, index) => (
+    <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+      {["Degree Name", "College", "Year"].map((label, i) => {
+        const field = ["name", "college", "year"][i];
+        return (
+          <div key={label}>
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">{label}</label>
             <input
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={handleGalleryUpload}
-              className="w-full p-2 border rounded"
+              type="text"
+              value={degree[field] || ""}
+              onChange={(e) => handleDegreeChange(index, field, e.target.value)}
+              className="w-full p-3 border rounded-xl dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
           </div>
+        );
+      })}
+      <div className="flex items-end">
+        <button
+          type="button"
+          onClick={() => removeDegree(index)}
+          className="p-2 rounded-xl bg-red-500 hover:bg-red-600 text-white flex items-center justify-center"
+        >
+          <Trash2 className="w-5 h-5" />
+        </button>
+        <button
+    type="button"
+    onClick={addDegree}
+    className=" ml-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium flex items-center gap-2"
+  >
+    <Plus className="w-5 h-5" />
+  </button>
+      </div>
+    </div>
+  ))}
+
+
+</motion.div>
+
+{/* Education Section */}
+<motion.div
+  ref={educationRef}
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.4, delay: 0.1 }}
+  className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-lg ring-1 ring-zinc-200 dark:ring-zinc-700"
+>
+  <h2 className="text-2xl font-semibold text-zinc-800 dark:text-white mb-4">🏫 Education</h2>
+
+  {(formData.education || []).map((edu, index) => (
+    <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+      {["Year", "Exam Name", "Institute"].map((label, i) => {
+        const field = ["year", "examName", "institute"][i];
+        return (
+          <div key={label}>
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">{label}</label>
+            <input
+              type="text"
+              value={edu[field] || ""}
+              onChange={(e) => handleEducationChange(index, field, e.target.value)}
+              className="w-full p-3 border rounded-xl dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            />
+          </div>
+        );
+      })}
+      <div className="flex items-end">
+        <button
+          type="button"
+          onClick={() => removeEducation(index)}
+          className=" p-2 rounded-xl bg-red-500 hover:bg-red-600 text-white flex items-center justify-center"
+        >
+          <Trash2 className="w-5 h-5" />
+        </button>
+        <button
+    type="button"
+    onClick={addEducation}
+    className=" ml-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium flex items-center gap-2"
+  >
+    <Plus className="w-5 h-5" /> 
+  </button>
+      </div>
+    </div>
+  ))}
+
+ 
+</motion.div>
+
+<motion.div
+  ref={workRef}
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.4 }}
+  className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-lg ring-1 ring-zinc-200 dark:ring-zinc-700 mb-6"
+>
+  <h2 className="text-2xl font-semibold text-zinc-800 dark:text-white mb-4">💼 Work Information</h2>
+
+  {(formData.work || []).map((work, index) => (
+    <div key={index} className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
+      {[
+        { label: "Role", key: "role" },
+        { label: "Institution", key: "college" },
+        { label: "Days", key: "day" },
+        { label: "Time", key: "time" },
+        { label: "Contact Number", key: "collegePhoneNumber" },
+      ].map(({ label, key }) => (
+        <div key={key}>
+          <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">{label}</label>
+          <input
+            type="text"
+            value={work[key] || ""}
+            onChange={(e) => handleWorkChange(index, key, e.target.value)}
+            className="w-full p-3 border rounded-xl dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          />
         </div>
+      ))}
+      <div className="flex ">
+        <button
+          type="button"
+          onClick={() => removeWork(index)}
+          className=" p-2 rounded-xl bg-red-500 hover:bg-red-600 text-white flex items-center justify-center"
+        >
+          <Trash2 className="w-5 h-5" />
+        </button>
+        <button
+    type="button"
+    onClick={addWork}
+    className="ml-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium flex items-center gap-2"
+  >
+    <Plus className="w-5 h-5" /> 
+  </button>
+      </div>
+    </div>
+  ))}
+
+
+</motion.div>
+
+{/* Experience Section */}
+<motion.div
+  ref={experienceRef}
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.4, delay: 0.1 }}
+  className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-lg ring-1 ring-zinc-200 dark:ring-zinc-700"
+>
+  <h2 className="text-2xl font-semibold text-zinc-800 dark:text-white mb-4">🧪 Experience</h2>
+
+  {(formData.experience || []).map((exp, index) => (
+    <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+      {[
+        { label: "Role", key: "role" },
+        { label: "Institution", key: "college" },
+        { label: "Start Year", key: "startingYear" },
+        { label: "End Year", key: "endingYear" },
+      ].map(({ label, key }) => (
+        <div key={key}>
+          <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">{label}</label>
+          <input
+            type="text"
+            value={exp[key] || ""}
+            onChange={(e) => handleExperienceChange(index, key, e.target.value)}
+            className="w-full p-3 border rounded-xl dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          />
+        </div>
+      ))}
+      <div className="flex items-end">
+        <button
+          type="button"
+          onClick={() => removeExperience(index)}
+          className=" p-2 rounded-xl bg-red-500 hover:bg-red-600 text-white flex items-center justify-center"
+        >
+          <Trash2 className="w-5 h-5" />
+        </button>
+        <button
+    type="button"
+    onClick={addExperience}
+    className="ml-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium flex items-center gap-2"
+  >
+    <Plus className="w-5 h-5" />
+  </button>
+      </div>
+    </div>
+  ))}
+
+  
+</motion.div>
+          
+
+<motion.div
+  ref={chamberRef}
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.4, delay: 0.2 }}
+  className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-lg ring-1 ring-zinc-200 dark:ring-zinc-700 mb-6"
+>
+  <h2 className="text-2xl font-semibold text-zinc-800 dark:text-white mb-4">🏥 Chamber</h2>
+
+  {(formData.chamber || []).map((chamber, index) => (
+    <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+      {[
+        { label: "Place", key: "place" },
+        { label: "Days", key: "day" },
+        { label: "Time", key: "time" },
+        { label: "Contact", key: "bookContact" },
+      ].map(({ label, key }) => (
+        <div key={key}>
+          <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">{label}</label>
+          <input
+            type="text"
+            value={chamber[key as keyof typeof chamber] || ""}
+            onChange={(e) => handleChamberChange(index, key as keyof typeof chamber, e.target.value)}
+            className="w-full p-3 border rounded-xl dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          />
+        </div>
+      ))}
+      <div className="flex items-end">
+        <button
+          type="button"
+          onClick={() => removeChamber(index)}
+          className="p-2 rounded-xl bg-red-500 hover:bg-red-600 text-white flex items-center justify-center"
+        >
+          <Trash2 className="w-5 h-5" />
+        </button>
+        <button
+    type="button"
+    onClick={addChamber}
+    className="ml-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium flex items-center gap-2"
+  >
+    <Plus className="w-5 h-5" /> 
+  </button>
+      </div>
+    </div>
+  ))}
+
+ 
+</motion.div>
+
+        {/* Gallery Section */}
+        <motion.div
+  ref={galleryRef}
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.4, delay: 0.3 }}
+  className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-lg ring-1 ring-zinc-200 dark:ring-zinc-700"
+>
+  <h2 className="text-2xl font-semibold text-zinc-800 dark:text-white mb-4">🖼️ Gallery</h2>
+
+  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+    {(formData.gallery || []).map((image, index) => (
+      <div key={index} className="relative rounded-2xl overflow-hidden shadow-md">
+        <img
+          src={image}
+          alt={`Gallery ${index + 1}`}
+          className="w-full h-48 object-cover rounded-xl border dark:border-zinc-700"
+        />
+        <button
+          type="button"
+          onClick={() => removeGalleryImage(index)}
+          className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center"
+        >
+          ×
+        </button>
+      </div>
+    ))}
+  </div>
+
+  <div>
+    <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Add Images</label>
+    <input
+      type="file"
+      multiple
+      accept="image/*"
+      onChange={handleGalleryUpload}
+      className="w-full p-3 border rounded-xl dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+    />
+  </div>
+</motion.div>
 
 {/* Add this section inside your Basic Information div */}
-<div className="bg-gray-50 p-4 rounded-lg">
-  <h2 className="text-xl font-semibold mb-4">Social Media Links</h2>
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-    {/* Facebook */}
-    <div>
-      <label className="block text-sm font-medium mb-1 flex items-center">
-        <svg className="w-5 h-5 mr-2 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-        </svg>
-        Facebook Profile URL
-      </label>
-      <input
-        type="url"
-        name="fbLink"
-        value={formData.fbLink || ""}
-        onChange={handleSocialMediaChange}
-        placeholder="https://facebook.com/yourprofile"
-        className="w-full p-2 border rounded"
-      />
-    </div>
+<div className="bg-gray-50 p-4 rounded-lg shadow-md">
+      {/* Toggle Header */}
+      <div
+        className="flex justify-between items-center cursor-pointer"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <h2 className="text-xl font-semibold flex items-center">
+          Social Media Links
+        </h2>
+        <span className="transition-transform duration-300">
+          {isOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+        </span>
+      </div>
 
-    {/* Instagram */}
-    <div>
-      <label className="block text-sm font-medium mb-1 flex items-center">
-        <svg className="w-5 h-5 mr-2 text-pink-500" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
-        </svg>
-        Instagram Profile URL
-      </label>
-      <input
-        type="url"
-        name="instagram"
-        value={formData.instagram || ""}
-        onChange={handleSocialMediaChange}
-        placeholder="https://instagram.com/yourprofile"
-        className="w-full p-2 border rounded"
-      />
+      {/* Collapsible Content */}
+      {isOpen && (
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Social Input Component */}
+          {[
+            {
+              name: "Facebook",
+              nameAttr: "fbLink",
+              iconColor: "text-blue-600",
+              placeholder: "https://facebook.com/yourprofile",
+              svgPath:
+                "M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99..." // trimmed
+            },
+            {
+              name: "Instagram",
+              nameAttr: "instagram",
+              iconColor: "text-pink-500",
+              placeholder: "https://instagram.com/yourprofile",
+              svgPath:
+                "M12 2.163c3.204 0 3.584.012 4.85.07..." // trimmed
+            },
+            {
+              name: "LinkedIn",
+              nameAttr: "Linkedin",
+              iconColor: "text-blue-500",
+              placeholder: "https://linkedin.com/in/yourprofile",
+              svgPath:
+                "M19 0h-14c-2.761 0-5 2.239-5 5v14c0..." // trimmed
+            },
+            {
+              name: "YouTube",
+              nameAttr: "youTubeLink",
+              iconColor: "text-red-600",
+              placeholder: "https://youtube.com/yourchannel",
+              svgPath:
+                "M19.615 3.184c-3.604-.246-11.631..." // trimmed
+            }
+          ].map(({ name, nameAttr, iconColor, placeholder, svgPath }) => (
+            <div key={name}>
+              <label className="block text-sm font-medium mb-1">
+                <div className="flex items-center">
+                  <svg
+                    className={`w-5 h-5 mr-2 ${iconColor}`}
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d={svgPath} />
+                  </svg>
+                  {name} Profile URL
+                </div>
+              </label>
+              <input
+                type="url"
+                name={nameAttr}
+                value={formData[nameAttr] || ""}
+                onChange={handleSocialMediaChange}
+                placeholder={placeholder}
+                className="w-full p-2 border rounded"
+              />
+            </div>
+          ))}
+        </div>
+      )}
     </div>
-
-    {/* LinkedIn */}
-    <div>
-      <label className="block text-sm font-medium mb-1 flex items-center">
-        <svg className="w-5 h-5 mr-2 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-        </svg>
-        LinkedIn Profile URL
-      </label>
-      <input
-        type="url"
-        name="linkedin"
-        value={formData.Linkedin || ""}
-        onChange={handleSocialMediaChange}
-        placeholder="https://linkedin.com/in/yourprofile"
-        className="w-full p-2 border rounded"
-      />
-    </div>
-
-    {/* YouTube */}
-    <div>
-      <label className="block text-sm font-medium mb-1 flex items-center">
-        <svg className="w-5 h-5 mr-2 text-red-600" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
-        </svg>
-        YouTube Channel URL
-      </label>
-      <input
-        type="url"
-        name="youTubeLink"
-        value={formData.youTubeLink || ""}
-        onChange={handleSocialMediaChange}
-        placeholder="https://youtube.com/yourchannel"
-        className="w-full p-2 border rounded"
-      />
-    </div>
-  </div>
-</div>
         <div className="text-center">
           <button type="submit" className="px-6 py-3 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600">
             Save Profile
@@ -761,5 +804,6 @@ export default function DoctorProfileEditor() {
         </div>
       </form>
     </div>
+ </div>
   );
 }
