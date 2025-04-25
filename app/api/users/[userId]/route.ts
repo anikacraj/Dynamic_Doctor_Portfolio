@@ -1,35 +1,7 @@
-// File: /app/api/users/[userId]/route.ts
 import { dbConnect } from "@/config/dbConnect";
 import userModel from "@/models/user.model";
 import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
-
-interface DoctorProfile {
-  name: string;
-  email: string;
-  phoneNo: string;
-  optionalEmail: string;
-  registerId: string;
-  specialization: string;
-  mbbsCollege: string;
-  profilePhoto: string;
-
-  ContactNo: string;
-  bio: string;
-  aboutPicture: string;
-  fbLink: string;
-  instagram: string;
-  Linkedin: string;
-  youTubeLink: string;
- 
-  degrees: { name: string; college: string; year: string }[];
-  education: { year: string; examName: string; institute: string }[];
-  work: { role: string; college: string; day: string; time: string; collegePhoneNumber: string }[];
-  experience: { role: string; college: string; startingYear: string; endingYear: string }[];
-  chamber: { place: string; day: string; time: string; bookContact: string }[];
-  contacts:{name:string;email:string;address:string;phoneNo:string;message:string}[];
-  gallery: string[];
-}
 
 export async function GET(
   req: NextRequest,
@@ -37,7 +9,6 @@ export async function GET(
 ) {
   await dbConnect();
 
-  // Add validation for ObjectId
   if (!mongoose.Types.ObjectId.isValid(params.userId)) {
     return NextResponse.json(
       { error: "Invalid user ID format" },
@@ -46,11 +17,26 @@ export async function GET(
   }
 
   try {
-    const user = await userModel.findById(params.userId).select("-password");
+    const user = await userModel.findById(params.userId)
+      .select("-password -verifyToken -verifyTokenExpire");
+      
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
-    return NextResponse.json(user);
+
+    // Add appointment counts to response
+    const appointmentStats = {
+      total: user.contacts.length,
+      pending: user.contacts.filter((c: any) => c.status === 'pending').length,
+      accepted: user.contacts.filter((c: any) => c.status === 'accepted').length,
+      rejected: user.contacts.filter((c: any) => c.status === 'rejected').length
+    };
+
+    return NextResponse.json({
+      ...user.toObject(),
+      appointmentStats
+    });
+    
   } catch (error) {
     console.error("Error fetching user:", error);
     return NextResponse.json(
@@ -60,47 +46,53 @@ export async function GET(
   }
 }
 
+export async function PUT(
+  request: NextRequest, 
+  { params }: { params: { userId: string } }
+) {
+  await dbConnect();
 
-
-export async function PUT(request: NextRequest, context: { params: { userId: string } }) {
   try {
-    const { userId } = context.params; // ✅ correct way to get userId
-    const data = await request.json();
+    const { userId } = params;
+    const updateData = await request.json();
 
-    const updateFields = { ...data };
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return NextResponse.json(
+        { error: "Invalid user ID format" },
+        { status: 400 }
+      );
+    }
 
-    // ❗Optional: Remove undefined fields to avoid issues
-    Object.keys(updateFields).forEach(
-      (key) => updateFields[key] === undefined && delete updateFields[key]
-    );
+    // Remove sensitive fields if present
+    const { password, verifyToken, verifyTokenExpire, ...safeUpdateData } = updateData;
 
     const updatedUser = await userModel.findByIdAndUpdate(
       userId,
-      { $set: updateFields },
+      { $set: safeUpdateData },
       { new: true, runValidators: true }
-    );
+    ).select("-password -verifyToken -verifyTokenExpire");
 
     if (!updatedUser) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     return NextResponse.json(
-      { message: "User updated successfully", user: updatedUser },
+      { message: "Profile updated successfully", user: updatedUser },
       { status: 200 }
     );
+    
   } catch (error: any) {
     if (error.code === 11000) {
-      // ✅ Handle duplicate key error for unique fields
       const field = Object.keys(error.keyPattern)[0];
       return NextResponse.json(
-        { error: `Duplicate value for unique field: ${field}` },
+        { error: `${field} already exists` },
         { status: 400 }
       );
     }
-
+    
     console.error("Error updating user:", error);
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: error.message || "Internal server error" },
       { status: 500 }
     );
   }
@@ -113,7 +105,16 @@ export async function DELETE(
   await dbConnect();
 
   try {
-    const deletedUser = await userModel.findByIdAndDelete(params.userId);
+    const { userId } = params;
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return NextResponse.json(
+        { error: "Invalid user ID format" },
+        { status: 400 }
+      );
+    }
+
+    const deletedUser = await userModel.findByIdAndDelete(userId);
     
     if (!deletedUser) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });

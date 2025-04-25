@@ -1,74 +1,111 @@
-'use client'
+'use client';
 
-import { FaFacebookF, FaInstagram, FaLinkedinIn, FaYoutube } from 'react-icons/fa'
-import { motion } from 'framer-motion'
-import Link from 'next/link';
-import Image from "next/image";
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from "next-auth/react";
+import { motion } from 'framer-motion';
+import { FiMail, FiPhone, FiMapPin, FiUser, FiMessageSquare } from 'react-icons/fi';
+import { FaFacebookF, FaInstagram, FaLinkedinIn, FaYoutube } from 'react-icons/fa';
+import Image from 'next/image';
+
+interface ContactFormData {
+  name: string;
+  email: string;
+  address: string;
+  phoneNo: string;
+  message: string;
+  userId: string;
+}
 
 export default function Contact() {
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [address, setAddress] = useState("")
-  const [phone, setPhone] = useState("")
-  const [message, setMessage] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitError, setSubmitError] = useState("")
-  const [submitSuccess, setSubmitSuccess] = useState(false)
+  const [formData, setFormData] = useState<ContactFormData>({
+    name: '',
+    email: '',
+    address: '',
+    phoneNo: '',
+    message: '',
+    userId: ''
+  });
+  
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{
+    success?: boolean;
+    message?: string;
+  }>({});
 
   const { data: session } = useSession();
   const router = useRouter();
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ 
+      ...prev, 
+      [name]: value,
+      userId: session?.user?.id || ''
+    }));
+  };
+  
+
+  const validateForm = (): boolean => {
+    if (!formData.name.trim()) {
+      setSubmitStatus({ success: false, message: 'Name is required' });
+      return false;
+    }
+    if (!formData.email.trim() || !/^\S+@\S+\.\S+$/.test(formData.email)) {
+      setSubmitStatus({ success: false, message: 'Valid email is required' });
+      return false;
+    }
+    if (!formData.message.trim()) {
+      setSubmitStatus({ success: false, message: 'Message is required' });
+      return false;
+    }
+    if (!formData.userId) {
+      setSubmitStatus({ success: false, message: 'Doctor ID is missing' });
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) return;
+    
     setIsSubmitting(true);
-    setSubmitError("");
-    setSubmitSuccess(false);
-  
-    console.log("Submitting form with data:", {
-      name,
-      email,
-      address,
-      phone,
-      message,
-      userId: session?.user?.id
-    });
-  
+    setSubmitStatus({});
+
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name,
-          email,
-          address,
-          phoneNo: phone,
-          message,
-          userId: session?.user?.id
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
       });
-  
+
       const data = await response.json();
-      console.log("API Response:", data);
-  
+
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to send message');
+        throw new Error(data.error || 'Failed to send appointment request');
       }
-  
-      setName('');
-      setEmail('');
-      setAddress('');
-      setPhone('');
-      setMessage('');
+
+      setSubmitStatus({
+        success: true,
+        message: 'Appointment request sent successfully!'
+      });
       
-      setSubmitSuccess(true);
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        address: '',
+        phoneNo: '',
+        message: '',
+        userId: session?.user?.id || ''
+      });
+
     } catch (error: any) {
-      console.error('Full submission error:', error);
-      setSubmitError(error.message || 'Failed to send message');
+      setSubmitStatus({
+        success: false,
+        message: error.message || 'Failed to send request'
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -76,55 +113,65 @@ export default function Contact() {
 
   return (
     <div className="relative border-1 sm:border-2 border-blue-500 rounded-2xl min-h-screen sm:min-h-[20vh] 
-    w-full sm:p-15 sm:pt-18 sm:w-3/4 mx-auto mt-3 bg-gradient-to-br from-[#d0f4de] via-[#fef9ef] to-[#fcbf49] flex items-center justify-center xl:p-6 p-2 overflow-hidden">
+      w-full sm:p-15 sm:pt-18 sm:w-3/4 mx-auto mt-3 bg-gradient-to-br from-[#d0f4de] via-[#fef9ef] to-[#fcbf49] 
+      flex items-center justify-center xl:p-6 p-2 overflow-hidden">
 
-      {/* Glow Circles */}
+      {/* Glow Effects */}
       <div className="absolute -top-32 -left-32 w-96 h-96 bg-pink-300 rounded-full opacity-20 blur-3xl z-0"></div>
       <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-green-300 rounded-full opacity-20 blur-3xl z-0"></div>
 
-      <div className="relative z-10 w-full sm:max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-10 bg-white/40 backdrop-blur-md rounded-3xl shadow-2xl p-10 border border-white/50">
+      <div className="relative z-10 w-full sm:max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-10 bg-white/40 
+        backdrop-blur-md rounded-3xl shadow-2xl p-6 sm:p-10 border border-white/50">
 
-        {/* Left Side: Contact Info + Socials */}
+        {/* Left Side: Contact Info */}
         <motion.div
           initial={{ opacity: 0, x: -30 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
-          className="flex flex-col w-full items-center justify-between space-y-8 sm:items-start"
+          className="flex flex-col items-center justify-between space-y-8 sm:items-start"
         >
-          <div className="text-center sm:text-left order-3 sm:order-none">
-            <h2 className="sm:text-4xl text-2xl font-bold text-gray-800 mb-1 font-serif">Let's Connect</h2>
+          <div className="text-center sm:text-left">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2 font-serif">
+              Book an Appointment
+            </h2>
             <p className="text-gray-700 mb-4">
-              <span className='font-semibold'> 📞</span> <span className="font-small sm:font-medium">+8801234567890</span><br />
-              <span className="font-serif">Available from 10 PM to 6 PM</span>
+              <FiPhone className="inline mr-2" />
+              <span className="font-medium">+8801234567890</span>
+              <br />
+              <span className="text-sm">Available from 10 AM to 6 PM</span>
             </p>
           </div>
 
-          {/* 3D IMAGE */}
-          <div className="order-1 sm:order-none lg:w-[320px] lg:h-[350px] w-[280px] h-[280px] sm:mt-[-50px] relative overflow-hidden shadow-xl ring-1 ring-gray-200 rounded-full sm:rounded-xl">
+          {/* Doctor Image */}
+          <div className="w-48 h-48 sm:w-64 sm:h-64 relative overflow-hidden shadow-xl rounded-full border-4 border-white">
             <Image
               src="/contactDr.png"
               priority
               quality={100}
-              alt="dr photo"
+              alt="Doctor"
               fill
               className="object-cover"
             />
           </div>
 
-          {/* SOCIALS */}
-          <div className="flex space-x-4 order-2 sm:order-none mb-3">
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="bg-white/30 backdrop-blur-xl p-3 rounded-full shadow-md hover:scale-110 transition-all">
-              <FaFacebookF className="text-blue-600 text-xl" />
-            </a>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="bg-white/30 backdrop-blur-xl p-3 rounded-full shadow-md hover:scale-110 transition-all">
-              <FaInstagram className="text-pink-500 text-xl" />
-            </a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="bg-white/30 backdrop-blur-xl p-3 rounded-full shadow-md hover:scale-110 transition-all">
-              <FaLinkedinIn className="text-blue-700 text-xl" />
-            </a>
-            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="bg-white/30 backdrop-blur-xl p-3 rounded-full shadow-md hover:scale-110 transition-all">
-              <FaYoutube className="text-red-600 text-xl" />
-            </a>
+          {/* Social Links */}
+          <div className="flex space-x-4">
+            {[
+              { icon: <FaFacebookF className="text-blue-600 text-xl" />, url: "https://facebook.com" },
+              { icon: <FaInstagram className="text-pink-500 text-xl" />, url: "https://instagram.com" },
+              { icon: <FaLinkedinIn className="text-blue-700 text-xl" />, url: "https://linkedin.com" },
+              { icon: <FaYoutube className="text-red-600 text-xl" />, url: "https://youtube.com" }
+            ].map((social, index) => (
+              <a
+                key={index}
+                href={social.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-white/70 p-3 rounded-full shadow-md hover:scale-110 transition-all"
+              >
+                {social.icon}
+              </a>
+            ))}
           </div>
         </motion.div>
 
@@ -133,89 +180,113 @@ export default function Contact() {
           initial={{ opacity: 0, x: 30 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
-          className="space-y-5"
           onSubmit={handleSubmit}
+          className="space-y-4"
         >
-          {submitError && (
-            <div className="p-3 bg-red-100 text-red-700 rounded-xl">
-              {submitError}
+          {submitStatus.message && (
+            <div className={`p-3 rounded-xl ${
+              submitStatus.success 
+                ? 'bg-green-100 text-green-800' 
+                : 'bg-red-100 text-red-800'
+            }`}>
+              {submitStatus.message}
             </div>
           )}
-          
-          {submitSuccess && (
-            <div className="p-3 bg-green-100 text-green-700 rounded-xl">
-              Message sent successfully!
-            </div>
-          )}
+
+          <FormField
+            icon={<FiUser className="text-gray-500" />}
+            label="Full Name"
+            name="name"
+            type="text"
+            value={formData.name}
+            onChange={handleChange}
+            required
+          />
+
+          <FormField
+            icon={<FiMail className="text-gray-500" />}
+            label="Email"
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
+
+          <FormField
+            icon={<FiMapPin className="text-gray-500" />}
+            label="Address"
+            name="address"
+            type="text"
+            value={formData.address}
+            onChange={handleChange}
+          />
+
+          <FormField
+            icon={<FiPhone className="text-gray-500" />}
+            label="Phone Number"
+            name="phoneNo"
+            type="tel"
+            value={formData.phoneNo}
+            onChange={handleChange}
+          />
 
           <div>
-            <label className="block text-gray-800 font-medium mb-1">Name</label>
-            <input
-              onChange={(e) => setName(e.target.value)}
-              value={name}
-              type="text"
-              placeholder="Enter your name"
-              className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-400 focus:outline-none bg-white/70 shadow-md"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-800 font-medium mb-1">Email</label>
-            <input
-              onChange={(e) => setEmail(e.target.value)}
-              value={email}
-              type="email"
-              placeholder="example@email.com"
-              className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-400 focus:outline-none bg-white/70 shadow-md"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-800 font-medium mb-1">Address</label>
-            <input
-              onChange={(e) => setAddress(e.target.value)}
-              value={address}
-              type="text"
-              placeholder="Enter your address"
-              className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-400 focus:outline-none bg-white/70 shadow-md"
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-800 font-medium mb-1">Phone</label>
-            <input
-              onChange={(e) => setPhone(e.target.value)}
-              value={phone}
-              type="tel"
-              placeholder="+880..."
-              className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-400 focus:outline-none bg-white/70 shadow-md"
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-800 font-medium mb-1">Message</label>
+            <label className="flex items-center text-gray-800 font-medium mb-1">
+              <FiMessageSquare className="mr-2 text-gray-500" />
+              Your Message
+            </label>
             <textarea
-              onChange={(e) => setMessage(e.target.value)}
-              value={message}
+              name="message"
+              value={formData.message}
+              onChange={handleChange}
               rows={4}
-              cols={10}
-              placeholder="Write your message..."
-              className="w-full p-3 rounded-xl border resize-none border-gray-300 focus:ring-2 focus:ring-green-400 focus:outline-none bg-white/70 shadow-md"
+              className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-400 focus:outline-none bg-white/70 shadow-md"
               required
-            ></textarea>
+            />
           </div>
 
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`w-full ${isSubmitting ? 'bg-gray-400' : 'bg-green-600 hover:bg-green-700'} text-white font-semibold py-3 rounded-xl transition duration-300 shadow-lg`}
+            className={`w-full py-3 px-4 rounded-xl font-semibold text-white transition-all ${
+              isSubmitting
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-green-600 hover:bg-green-700 shadow-lg hover:shadow-xl'
+            }`}
           >
-            {isSubmitting ? 'Sending...' : 'Send Message'}
+            {isSubmitting ? 'Sending...' : 'Request Appointment'}
           </button>
         </motion.form>
       </div>
     </div>
-  )
+  );
+}
+
+// Reusable form field component
+function FormField({ icon, label, name, type, value, onChange, required = false }: {
+  icon: React.ReactNode;
+  label: string;
+  name: string;
+  type: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  required?: boolean;
+}) {
+  return (
+    <div>
+      <label className="flex items-center text-gray-800 font-medium mb-1">
+        {icon}
+        <span className="ml-2">{label}</span>
+      </label>
+      <input
+        name={name}
+        type={type}
+        value={value}
+        onChange={onChange}
+        required={required}
+        className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-400 focus:outline-none bg-white/70 shadow-md"
+      />
+    </div>
+  );
 }

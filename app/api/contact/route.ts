@@ -1,66 +1,84 @@
 import { dbConnect } from "@/config/dbConnect";
 import userModel from "@/models/user.model";
 import { NextRequest, NextResponse } from "next/server";
+import mongoose from "mongoose"; // Added import
+
+interface ContactData {
+  name: string;
+  email: string;
+  address?: string;
+  phoneNo?: string;
+  message: string;
+  userId: string;
+}
 
 export async function POST(request: NextRequest) {
   await dbConnect();
 
   try {
-    const { name, email, address, phoneNo, message, userId } = await request.json();
-    console.log("Received data:", { name, email, address, phoneNo, message, userId });
-
-    // Validate required fields
-    if (!name || !email || !message) {
-      console.error("Validation failed: Missing required fields");
+    const { name, email, address, phoneNo, message, userId }: ContactData = await request.json();
+    
+    // Enhanced validation
+    if (!name?.trim() || !email?.trim() || !message?.trim()) {
       return NextResponse.json(
         { error: "Name, email, and message are required fields" },
         { status: 400 }
       );
     }
 
-    if (!userId) {
-      console.error("Validation failed: Missing userId");
+    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
       return NextResponse.json(
-        { error: "Doctor ID is required" },
+        { error: "Valid doctor ID is required" },
         { status: 400 }
       );
     }
 
     const newContact = {
-      name,
-      email,
-      address: address || "",
-      phoneNo: phoneNo || "",
-      message,
-      
+      name: name.trim(),
+      email: email.trim(),
+      address: address?.trim() || "",
+      phoneNo: phoneNo?.trim() || "",
+      message: message.trim(),
+      status: "pending", // Explicit default
       createdAt: new Date(),
     };
 
-    console.log("Attempting to update user:", userId);
     const updatedUser = await userModel.findByIdAndUpdate(
       userId,
       { $push: { contacts: newContact } },
       { new: true, runValidators: true }
-    );
+    ).select("-password");
 
     if (!updatedUser) {
-      console.error("User not found with ID:", userId);
       return NextResponse.json(
         { error: "Doctor not found" },
         { status: 404 }
       );
     }
 
-    console.log("Successfully updated user:", updatedUser._id);
+    // Get the newly added contact
+    const addedContact = updatedUser.contacts[updatedUser.contacts.length - 1];
+
     return NextResponse.json(
-      { message: "Contact form submitted successfully", contact: newContact },
+      { 
+        message: "Appointment request submitted successfully", 
+        contact: addedContact 
+      },
       { status: 201 }
     );
 
   } catch (error: any) {
-    console.error("Full error:", error);
+    console.error("Contact submission error:", {
+      message: error.message,
+      stack: error.stack
+    });
+    
     return NextResponse.json(
-      { error: error.message || "Internal server error" },
+      { 
+        error: error.message.includes("duplicate") 
+          ? "This appointment already exists" 
+          : "Internal server error" 
+      },
       { status: 500 }
     );
   }
