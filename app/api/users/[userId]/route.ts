@@ -1,6 +1,7 @@
 // File: /app/api/users/[userId]/route.ts
 import { dbConnect } from "@/config/dbConnect";
 import userModel from "@/models/user.model";
+import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
 
 interface DoctorProfile {
@@ -35,6 +36,14 @@ export async function GET(
   { params }: { params: { userId: string } }
 ) {
   await dbConnect();
+
+  // Add validation for ObjectId
+  if (!mongoose.Types.ObjectId.isValid(params.userId)) {
+    return NextResponse.json(
+      { error: "Invalid user ID format" },
+      { status: 400 }
+    );
+  }
 
   try {
     const user = await userModel.findById(params.userId).select("-password");
