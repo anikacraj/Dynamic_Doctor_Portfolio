@@ -1,20 +1,22 @@
 import mongoose, { Document, Schema } from "mongoose";
 import crypto from "crypto";
 
-// Contact message interface with status tracking
+// Contact interface with all required fields
 interface Contact {
   _id?: mongoose.Types.ObjectId;
   name: string;
   email: string;
   address: string;
   phoneNo: string;
-  message: string;
+  message?: string; // Patient's original message
   status: 'pending' | 'accepted' | 'rejected';
+  doctorMessage?: string; // Doctor's response message
+  date?: string; // Scheduled date (YYYY-MM-DD format)
+  time?: string; // Scheduled time (HH:MM format)
   createdAt: Date;
   updatedAt?: Date;
 }
 
-// Doctor-specific interfaces
 interface Degree {
   name: string;
   college: string;
@@ -66,17 +68,17 @@ export interface IUser extends Document {
   registerId?: string;
   specialization?: string;
   profilePhoto?: string;
-  ContactNo?: string;
+  contactNo?: string;
   bio?: string;
   aboutPicture?: string;
-  
+
   // Social
   fbLink?: string;
   instagram?: string;
-  Linkedin?: string;
+  linkedin?: string;
   youTubeLink?: string;
   gallery?: string[];
-  
+
   // Professional
   degrees?: Degree[];
   education?: Education[];
@@ -84,55 +86,28 @@ export interface IUser extends Document {
   work?: Work[];
   experience?: Experience[];
   chamber?: Chamber[];
-  
+
   // Appointments
   contacts?: Contact[];
 }
 
+// Contact Schema
 const ContactSchema = new Schema({
-  name: { 
-    type: String, 
-    required: [true, 'Name is required'],
-    trim: true
-  },
-  email: { 
-    type: String, 
-    required: [true, 'Email is required'],
-    trim: true,
-    lowercase: true
-  },
-  address: { 
-    type: String, 
-    trim: true,
-    default: ""
-  },
-  phoneNo: { 
-    type: String, 
-    trim: true,
-    default: ""
-  },
-  message: { 
-    type: String, 
-    required: [true, 'Message is required'],
-    trim: true
-  },
+  name: { type: String, required: true, trim: true },
+  email: { type: String, required: true, trim: true, lowercase: true },
+  address: { type: String, trim: true, default: "" },
+  phoneNo: { type: String, required: true, trim: true },
+  message: { type: String, trim: true }, // Made optional to match frontend
   status: { 
     type: String, 
-    enum: {
-      values: ['pending', 'accepted', 'rejected'],
-      message: 'Status must be either pending, accepted or rejected'
-    }, 
-    default: 'pending',
-    required: true
+    enum: ['pending', 'accepted', 'rejected'], 
+    default: 'pending' 
   },
-  createdAt: { 
-    type: Date, 
-    default: Date.now,
-    immutable: true
-  },
-  updatedAt: { 
-    type: Date 
-  }
+  doctorMessage: { type: String, trim: true }, // Added for doctor's response
+  date: { type: String, trim: true }, // Added for scheduled date
+  time: { type: String, trim: true }, // Added for scheduled time
+  createdAt: { type: Date, default: Date.now, immutable: true },
+  updatedAt: { type: Date }
 }, {
   _id: true,
   versionKey: false
@@ -141,161 +116,42 @@ const ContactSchema = new Schema({
 const UserSchema: Schema<IUser> = new Schema(
   {
     // Authentication
-    name: { 
-      type: String, 
-      required: [true, 'Name is required'],
-      trim: true
-    },
-    email: { 
-      type: String, 
-      required: [true, 'Email is required'],
-      unique: true,
-      trim: true,
-      lowercase: true
-    },
-    phoneNo: { 
-      type: String, 
-      required: [true, 'Phone number is required'],
-      unique: true,
-      trim: true
-    },
-    password: { 
-      type: String, 
-      required: [true, 'Password is required'],
-      select: false
-    },
-    isVerified: { 
-      type: Boolean, 
-      default: false 
-    },
-    verifyToken: { 
-      type: String,
-      select: false
-    },
-    verifyTokenExpire: { 
-      type: Date,
-      select: false 
-    },
+    name: { type: String, required: true, trim: true },
+    email: { type: String, required: true, unique: true, trim: true, lowercase: true },
+    phoneNo: { type: String, required: true, unique: true, trim: true },
+    password: { type: String, required: true, select: false },
+    isVerified: { type: Boolean, default: false },
+    verifyToken: { type: String, select: false },
+    verifyTokenExpire: { type: Date, select: false },
 
     // Profile
-    optionalEmail: { 
-      type: String, 
-      unique: true, 
-      sparse: true,
-      trim: true,
-      lowercase: true
-    },
-    registerId: { 
-      type: String, 
-      unique: true, 
-      sparse: true,
-      trim: true
-    },
-    bio: { 
-      type: String, 
-      trim: true 
-    },
-    aboutPicture: { 
-      type: String 
-    },
-    ContactNo: { 
-      type: String, 
-      unique: true, 
-      sparse: true,
-      trim: true
-    },
-    specialization: { 
-      type: String, 
-      trim: true 
-    },
-    profilePhoto: { 
-      type: String 
-    },
+    optionalEmail: { type: String, unique: true, sparse: true, trim: true, lowercase: true },
+    registerId: { type: String, unique: true, sparse: true, trim: true },
+    bio: { type: String, trim: true },
+    aboutPicture: { type: String },
+    contactNo: { type: String, unique: true, sparse: true, trim: true },
+    specialization: { type: String, trim: true },
+    profilePhoto: { type: String },
 
     // Social
-    Linkedin: { 
-      type: String, 
-      trim: true 
-    },
-    fbLink: { 
-      type: String, 
-      trim: true 
-    },
-    instagram: { 
-      type: String, 
-      trim: true 
-    },
-    youTubeLink: { 
-      type: String, 
-      trim: true 
-    },
-    gallery: { 
-      type: [String], 
-      default: [] 
-    },
+    linkedin: { type: String, trim: true },
+    fbLink: { type: String, trim: true },
+    instagram: { type: String, trim: true },
+    youTubeLink: { type: String, trim: true },
+    gallery: { type: [String], default: [] },
 
     // Professional
-    degrees: {
-      type: [{
-        name: { type: String, trim: true },
-        college: { type: String, trim: true },
-        year: { type: String, trim: true }
-      }],
-      default: []
-    },
-
-    education: {
-      type: [{
-        year: { type: String, trim: true },
-        examName: { type: String, trim: true },
-        institute: { type: String, trim: true }
-      }],
-      default: []
-    },
-
-    mbbsCollege: { 
-      type: String, 
-      trim: true 
-    },
-
-    work: {
-      type: [{
-        role: { type: String, trim: true },
-        college: { type: String, trim: true },
-        day: { type: String, trim: true },
-        time: { type: String, trim: true },
-        collegePhoneNumber: { type: String, trim: true }
-      }],
-      default: []
-    },
-
-    experience: {
-      type: [{
-        role: { type: String, trim: true },
-        college: { type: String, trim: true },
-        startingYear: { type: String, trim: true },
-        endingYear: { type: String, trim: true }
-      }],
-      default: []
-    },
-
-    chamber: {
-      type: [{
-        place: { type: String, trim: true },
-        day: { type: String, trim: true },
-        time: { type: String, trim: true },
-        bookContact: { type: String, trim: true }
-      }],
-      default: []
-    },
+    degrees: { type: [ { name: String, college: String, year: String } ], default: [] },
+    education: { type: [ { year: String, examName: String, institute: String } ], default: [] },
+    mbbsCollege: { type: String, trim: true },
+    work: { type: [ { role: String, college: String, day: String, time: String, collegePhoneNumber: String } ], default: [] },
+    experience: { type: [ { role: String, college: String, startingYear: String, endingYear: String } ], default: [] },
+    chamber: { type: [ { place: String, day: String, time: String, bookContact: String } ], default: [] },
 
     // Appointments
-    contacts: {
-      type: [ContactSchema],
-      default: []
-    }
+    contacts: { type: [ContactSchema], default: [] }
   },
-  { 
+  {
     timestamps: true,
     toJSON: {
       virtuals: true,
@@ -310,21 +166,16 @@ const UserSchema: Schema<IUser> = new Schema(
   }
 );
 
-// Generate Verification Token Method
+// Method to generate token
 UserSchema.methods.getVerificationToken = function(): string {
   const verificationToken = crypto.randomBytes(20).toString("hex");
-  this.verifyToken = crypto
-    .createHash("sha256")
-    .update(verificationToken)
-    .digest("hex");
+  this.verifyToken = crypto.createHash("sha256").update(verificationToken).digest("hex");
   this.verifyTokenExpire = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
   return verificationToken;
 };
 
 // Indexes
 UserSchema.index({ 'contacts.status': 1 });
-
-// Add text indexes for search functionality
 UserSchema.index({
   name: 'text',
   specialization: 'text',

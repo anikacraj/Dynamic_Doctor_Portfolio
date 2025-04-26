@@ -1,30 +1,49 @@
+// app/api/sendEmails/route.ts - Updated with proper validation and error handling
 import { NextResponse } from 'next/server';
 import { dbConnect } from '@/config/dbConnect';
-import userModel from '@/models/user.model'; // Adjust this to your actual model
+import userModel from '@/models/user.model';
 import { sendEmail } from '@/utils/sendGmail';
 
 export async function POST(req: Request) {
   try {
-    const { to, subject, text, html, userId } = await req.json();
+    const { userId, to, subject, text, html } = await req.json();
 
-    // Fetch doctor's email from DB based on userId
-    await dbConnect();
-    const doctor = await userModel.findById(userId);  // Assuming Doctor model has a `userId` field
-    if (!doctor || !doctor.email) {
-      return NextResponse.json({ error: 'Doctor email not found' }, { status: 404 });
+    // Validate required fields
+    if (!userId || !to || !subject) {
+      return NextResponse.json(
+        { error: 'Missing required fields: userId, to, or subject' },
+        { status: 400 }
+      );
     }
 
-    // Now send the email from the doctor's email
-    const response = await sendEmail({
-      from: doctor.email,
+    await dbConnect();
+
+    // Fetch doctor's profile with basic projection
+    const doctor = await userModel.findById(userId).select('name email').lean();
+    
+    if (!doctor) {
+      return NextResponse.json({ error: 'Doctor not found' }, { status: 404 });
+    }
+
+    // Send email with doctor's name
+    await sendEmail({
+      fromName: doctor.name,
       to,
       subject,
-      text,
-      html,
+      text: text || '',
+      html: html || '',
     });
 
-    return NextResponse.json({ message: 'Email sent successfully' }, { status: 200 });
-  } catch (error) {
-    return NextResponse.json({ error: error.message || 'Failed to send email' }, { status: 500 });
+    return NextResponse.json(
+      { message: 'Email sent successfully' },
+      { status: 200 }
+    );
+
+  } catch (error: any) {
+    console.error('Email sending error:', error);
+    return NextResponse.json(
+      { error: error.message || 'Failed to send email' },
+      { status: 500 }
+    );
   }
 }

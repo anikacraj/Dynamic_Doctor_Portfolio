@@ -1,3 +1,4 @@
+// app/api/users/[userId]/appointments/route.ts
 import { dbConnect } from "@/config/dbConnect";
 import userModel from "@/models/user.model";
 import { NextRequest, NextResponse } from "next/server";
@@ -9,8 +10,11 @@ interface Appointment {
   email: string;
   phoneNo: string;
   address: string;
-  message: string;
+  message?: string;
   status: 'pending' | 'accepted' | 'rejected';
+  doctorMessage?: string;
+  date?: string;
+  time?: string;
   createdAt: Date;
   updatedAt?: Date;
 }
@@ -28,74 +32,52 @@ export async function GET(
 
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       return NextResponse.json(
-        { 
-          success: false,
-          error: "Invalid doctor ID format" 
-        },
+        { success: false, error: "Invalid doctor ID format" },
         { status: 400 }
       );
     }
 
-    // Validate status parameter if provided
-    if (status && !['pending', 'accepted', 'rejected'].includes(status)) {
-      return NextResponse.json(
-        { 
-          success: false,
-          error: "Invalid status value. Must be 'pending', 'accepted', or 'rejected'" 
-        },
-        { status: 400 }
-      );
-    }
-
-    // Get user with only contacts populated
     const user = await userModel.findById(userId)
-      .select('contacts')
+      .select('contacts name')
       .lean();
 
     if (!user) {
       return NextResponse.json(
-        { 
-          success: false,
-          error: "Doctor not found" 
-        },
+        { success: false, error: "Doctor not found" },
         { status: 404 }
       );
     }
 
-    // Process contacts with proper typing
     let appointments: Appointment[] = user.contacts.map(contact => ({
       ...contact,
-      status: contact.status || 'pending' // Default to pending if missing
+      _id: contact._id.toString(), // Convert to string for client compatibility
+      doctorMessage: contact.doctorMessage || undefined,
+      date: contact.date || undefined,
+      time: contact.time || undefined
     }));
 
-    // Filter by status if valid
     if (status) {
       appointments = appointments.filter(appt => appt.status === status);
     }
 
-    // Sort by date (newest first)
+    // Sort by creation date descending
     appointments.sort((a, b) => 
       new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
 
     return NextResponse.json(
-      { 
+      {
         success: true,
         count: appointments.length,
-        appointments 
+        appointments
       },
       { status: 200 }
     );
-    
-  } catch (error: any) {
-    console.error("Appointments fetch error:", {
-      message: error.message,
-      stack: error.stack,
-      timestamp: new Date().toISOString()
-    });
 
+  } catch (error: any) {
+    console.error("Appointments fetch error:", error);
     return NextResponse.json(
-      { 
+      {
         success: false,
         error: "Failed to fetch appointments. Please try again later."
       },
