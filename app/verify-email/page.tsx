@@ -3,11 +3,12 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/components/ui/use-toast";
 import { CircleX, SquareCheckBig } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 
 const VerifyEmail = () => {
   const { toast } = useToast();
+  const router = useRouter();
 
   const [loading, setLoading] = React.useState(false);
   const [verified, setVerified] = React.useState(false);
@@ -25,6 +26,15 @@ const VerifyEmail = () => {
       verifyEmail();
     }
   }, []);
+
+  useEffect(() => {
+    if (verified) {
+      const timer = setTimeout(() => {
+        router.push("/login");
+      }, 3000); // 3 seconds delay before redirect
+      return () => clearTimeout(timer);
+    }
+  }, [verified, router]);
 
   const verifyEmail = async () => {
     if (!verifyToken || !id)
@@ -46,6 +56,9 @@ const VerifyEmail = () => {
       if (res.ok) {
         setLoading(false);
         setVerified(true);
+      } else {
+        setLoading(false);
+        setError(true);
       }
     } catch (error) {
       console.log(error);
@@ -69,7 +82,7 @@ const VerifyEmail = () => {
             <SquareCheckBig color="green" />
             <AlertTitle>Email Verified!</AlertTitle>
             <AlertDescription>
-              Your email has been verified successfully.
+              Your email has been verified successfully. Redirecting to login...
             </AlertDescription>
           </Alert>
         )}
@@ -77,9 +90,9 @@ const VerifyEmail = () => {
         {error && (
           <Alert variant="destructive" className="mb-5">
             <CircleX color="red" />
-            <AlertTitle>Email Verified Failed!</AlertTitle>
+            <AlertTitle>Email Verification Failed!</AlertTitle>
             <AlertDescription>
-              Your verification token is invalid or Expired.
+              Your verification token is invalid or expired.
             </AlertDescription>
           </Alert>
         )}

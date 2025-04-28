@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, useAnimation } from "framer-motion";
 
 import Header from "@/components/ui/Header/HomePageHeader";
 import Footer from "@/components/ui/Footer";
@@ -10,9 +10,50 @@ import DesktopSlider from "@/components/ui/DesktopSlider";
 import MobileSlider from "@/components/ui/MobileSlider";
 import adminAboutUs from "@/components/ui/adminAboutUs";
 import AboutUsSection from "@/components/ui/adminAboutUs";
+import { useEffect, useState } from "react";
+
+
+
+const sentence = "Your journey to better healthcare starts now.";
+
+const container = {
+  hidden: { opacity: 1 },
+  visible: (i = 1) => ({
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+      delayChildren: 0.3,
+    },
+  }),
+};
+
+const child = {
+  hidden: { opacity: 0, y: `0.25em` },
+  visible: {
+    opacity: 1,
+    y: `0em`,
+    transition: {
+      duration: 0.4,
+      ease: [0.2, 0.65, 0.3, 0.9],
+    },
+  },
+};
 
 export default function Home() {
   const { data: session, status } = useSession();
+  const controls = useAnimation();
+
+  useEffect(() => {
+    const loopAnimation = async () => {
+      while (true) {
+        await controls.start("hidden");
+        await controls.start("visible");
+        await new Promise((res) => setTimeout(res, 2000)); // wait before restarting
+      }
+    };
+
+    loopAnimation();
+  }, [controls]);
 
   return (
     <div className="w-full min-h-screen flex flex-col bg-white dark:bg-gray-950 text-gray-900 dark:text-white">
@@ -134,15 +175,20 @@ export default function Home() {
 <AboutUsSection />
 </div>
       {/* CTA Section */}
-      <section className="mt-10 px-6 sm:px-16 py-12 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-gray-800 dark:to-gray-900 text-center rounded-t-3xl">
-        <motion.h3
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 1 }}
-          className="text-3xl font-bold mb-4"
-        >
-          Your journey to better healthcare starts now.
-        </motion.h3>
+      <section className="mt-10 px-9 h-[400px] sm:px-16 py-12 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-gray-800 dark:to-gray-900 
+      text-center rounded-t-3xl">
+      <motion.h3
+      className="text-3xl mt-6 font-bold mb-4"
+      variants={container}
+      initial="hidden"
+      animate={controls}
+    >
+      {sentence.split("").map((char, index) => (
+        <motion.span key={index} variants={child}>
+          {char === " " ? "\u00A0" : char}
+        </motion.span>
+      ))}
+    </motion.h3>
         <p className="text-lg text-gray-800 dark:text-gray-300 mb-6">
           Join our community — whether to heal or to help.
         </p>
