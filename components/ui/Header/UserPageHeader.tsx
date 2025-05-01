@@ -17,7 +17,9 @@ export default function UserPageHeader() {
   
     if (!session?.user?.id) return null;
   return (
-    <header className='py-8 xl:py-12 text-white '>
+  <div>
+    
+      <header className='py-8 xl:py-12 text-white '>
       <div className='container mx-auto flex justify-between items-center'>
         <Link href="/">
           <h1 className='text-4xl font-bold  text-blue-500 dark:text-white'>
@@ -49,5 +51,6 @@ export default function UserPageHeader() {
         </div>
       </div>
     </header>
+  </div>
   )
 }

@@ -39,11 +39,14 @@ export default async function ProfilePage({ params }: { params: { userId: string
             </p>
 
             <div className="flex flex-col xl:flex-row items-center gap-8 mt-3">
-              <Link href="#contact" className="uppercase rounded-lg flex items-center gap-2 border-1 border-amber-500 p-4">
-                <span className="hover:bg-amber-800-300 transition-all duration-300 font-serif scroll-auto">
-                  Let's Connect With Me
-                </span>
-              </Link>
+            <Link
+        href="#contact"
+        scroll={true}
+        className="uppercase rounded-lg flex items-center gap-2 border border-amber-500 px-5 py-3 transition-all duration-300 bg-gradient-to-r from-amber-900 to-yellow-600 text-white hover:from-amber-600 hover:to-yellow-500
+         hover:text-black font-serif shadow-md"
+      >
+        Let's Connect With Me
+      </Link>
               <div className="mt-[-30px]">
                 <Social />
               </div>
