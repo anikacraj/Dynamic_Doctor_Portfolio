@@ -56,7 +56,7 @@ const ShowDoctorList = () => {
   return (
  <div className="mt-10">
 <div className="flex justify-between mb-7">
-<Link className='ml-4'  href="/">
+<Link className='ml-3'  href="/">
           <h1 className="text-3xl sm:text-4xl font-bold cursor-pointer hover:text-blue-400 transition duration-300">
             🩺DR <span className="text-blue-600">Port.
 
