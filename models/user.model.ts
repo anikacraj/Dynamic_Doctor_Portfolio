@@ -17,6 +17,8 @@ interface Contact {
   updatedAt?: Date;
 }
 
+
+
 interface Degree {
   name: string;
   college: string;
@@ -62,6 +64,9 @@ export interface IUser extends Document {
   verifyToken: string;
   verifyTokenExpire: Date;
   getVerificationToken(): string;
+  otp: string;
+  otpExpire:Date;
+
 
   // Profile
   optionalEmail?: string;
@@ -113,6 +118,7 @@ const ContactSchema = new Schema({
   versionKey: false
 });
 
+
 const UserSchema: Schema<IUser> = new Schema(
   {
     // Authentication
@@ -122,7 +128,10 @@ const UserSchema: Schema<IUser> = new Schema(
     password: { type: String, required: true, select: false },
     isVerified: { type: Boolean, default: false },
     verifyToken: { type: String, select: false },
-    verifyTokenExpire: { type: Date, select: false },
+    verifyTokenExpire: { type: Date, select: false }, // ✅ this name matters!
+    
+    otp: { type: String, select: false  },         // if hidden by default
+    otpExpire: { type: Date, select: false },
 
     // Profile
     optionalEmail: { type: String, unique: true, sparse: true, trim: true, lowercase: true },
@@ -167,13 +176,14 @@ const UserSchema: Schema<IUser> = new Schema(
 );
 
 // Method to generate token
-UserSchema.methods.getVerificationToken = function(): string {
-  const verificationToken = crypto.randomBytes(20).toString("hex");
-  this.verifyToken = crypto.createHash("sha256").update(verificationToken).digest("hex");
-  this.verifyTokenExpire = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
-  return verificationToken;
-};
+UserSchema.methods.getVerificationToken = function () {
+  const rawToken = crypto.randomBytes(32).toString("hex");
 
+  this.verifyToken = crypto.createHash("sha256").update(rawToken).digest("hex");
+  this.verifyTokenExpire = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+  return rawToken;
+};
 // Indexes
 UserSchema.index({ 'contacts.status': 1 });
 UserSchema.index({

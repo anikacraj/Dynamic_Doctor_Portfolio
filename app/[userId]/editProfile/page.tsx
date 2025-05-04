@@ -365,11 +365,15 @@ export default function DoctorProfileEditor() {
       <div className="text-md italic text-zinc-600 dark:text-zinc-400">{user?.email}</div>
     </div>
 
+    <div>
+      <label className="block text-lg text-zinc-700 dark:text-zinc-300 font-medium mb-1">RegisterId</label>
+      <div className="text-md italic text-zinc-600 dark:text-zinc-400">{user?.phoneNo}</div>
+    </div>
     {/* Dynamic Input Fields */}
     {[
       { label: "Contact Email*", name: "optionalEmail", type: "email" },
-      { label: "Contact Number*", name: "ContactNo", type: "number", handler: handleContactNoChange },
-      { label: "Register ID*", name: "registerId", type: "text", required: true },
+      { label: "Contact Number*", name: "ContactNo", type: "text", handler: handleContactNoChange },
+      { label: "Optional Phone Number", name: "registerId", type: "text", required: false },
       { label: "Specialization*", name: "specialization", type: "text", required: true },
       { label: "MBBS College*", name: "mbbsCollege", type: "text", required: true },
     ].map((field) => (
@@ -441,6 +445,23 @@ export default function DoctorProfileEditor() {
 >
   <h2 className="text-2xl font-semibold text-zinc-800 dark:text-white mb-4">🎓 Degrees</h2>
 
+  <div className="flex items-end">
+        <button
+          type="button"
+          onClick={() => removeDegree(index)}
+          className="p-2 rounded-xl bg-red-500 hover:bg-red-600 text-white flex items-center justify-center"
+        >
+          <Trash2 className="w-5 h-5" />
+        </button>
+        <button
+    type="button"
+    onClick={addDegree}
+    className=" ml-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium flex items-center gap-2"
+  >
+    <Plus className="w-5 h-5" />
+  </button>
+      </div>
+
   {(formData.degrees || []).map((degree, index) => (
     <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
       {["Degree Name", "College", "Year"].map((label, i) => {
@@ -489,6 +510,23 @@ export default function DoctorProfileEditor() {
 >
   <h2 className="text-2xl font-semibold text-zinc-800 dark:text-white mb-4">🏫 Education</h2>
 
+  <div className="flex items-end mb-3">
+        <button
+          type="button"
+          onClick={() => removeEducation(index)}
+          className=" p-2 rounded-xl bg-red-500 hover:bg-red-600 text-white flex items-center justify-center"
+        >
+          <Trash2 className="w-5 h-5" />
+        </button>
+        <button
+    type="button"
+    onClick={addEducation}
+    className=" ml-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium flex items-center gap-2"
+  >
+    <Plus className="w-5 h-5" /> 
+  </button>
+      </div>
+
   {(formData.education || []).map((edu, index) => (
     <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
       {["Year", "Exam Name", "Institute"].map((label, i) => {
@@ -535,6 +573,23 @@ export default function DoctorProfileEditor() {
   className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-lg ring-1 ring-zinc-200 dark:ring-zinc-700 mb-6"
 >
   <h2 className="text-2xl font-semibold text-zinc-800 dark:text-white mb-4">💼 Work Information</h2>
+
+  <div className="flex mb-4 ">
+        <button
+          type="button"
+          onClick={() => removeWork(index)}
+          className=" p-2 rounded-xl bg-red-500 hover:bg-red-600 text-white flex items-center justify-center"
+        >
+          <Trash2 className="w-5 h-5" />
+        </button>
+        <button
+    type="button"
+    onClick={addWork}
+    className="ml-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium flex items-center gap-2"
+  >
+    <Plus className="w-5 h-5" /> 
+  </button>
+      </div>
 
   {(formData.work || []).map((work, index) => (
     <div key={index} className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
@@ -587,6 +642,24 @@ export default function DoctorProfileEditor() {
 >
   <h2 className="text-2xl font-semibold text-zinc-800 dark:text-white mb-4">🧪 Experience</h2>
 
+
+  <div className="flex items-end mb-3">
+        <button
+          type="button"
+          onClick={() => removeExperience(index)}
+          className=" p-2 rounded-xl bg-red-500 hover:bg-red-600 text-white flex items-center justify-center"
+        >
+          <Trash2 className="w-5 h-5" />
+        </button>
+        <button
+    type="button"
+    onClick={addExperience}
+    className="ml-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium flex items-center gap-2"
+  >
+    <Plus className="w-5 h-5" />
+  </button>
+      </div>
+
   {(formData.experience || []).map((exp, index) => (
     <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
       {[
@@ -636,6 +709,23 @@ export default function DoctorProfileEditor() {
   className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-lg ring-1 ring-zinc-200 dark:ring-zinc-700 mb-6"
 >
   <h2 className="text-2xl font-semibold text-zinc-800 dark:text-white mb-4">🏥 Chamber</h2>
+
+  <div className="flex items-end">
+        <button
+          type="button"
+          onClick={() => removeChamber(index)}
+          className="p-2 rounded-xl bg-red-500 hover:bg-red-600 text-white flex items-center justify-center"
+        >
+          <Trash2 className="w-5 h-5" />
+        </button>
+        <button
+    type="button"
+    onClick={addChamber}
+    className="ml-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium flex items-center gap-2"
+  >
+    <Plus className="w-5 h-5" /> 
+  </button>
+      </div>
 
   {(formData.chamber || []).map((chamber, index) => (
     <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">

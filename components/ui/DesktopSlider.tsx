@@ -5,10 +5,10 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 
 const images = [
-  '/home.png',
-  '/about.png',
-  '/contact.png',
-  '/chamber.png',
+  '/ramaBiswas.png',
+  '/Dr.Shahedul.png',
+  '/DrKazi.png',
+  
 ];
 
 export default function DesktopSlider() {
@@ -26,7 +26,7 @@ export default function DesktopSlider() {
 
   return (
     <div className="hidden md:flex justify-center top-0 relative sm:w-[750px] mx-auto z-10">
-      <div className="relative h-[270px] sm:w-[650px] rounded-2xl overflow-hidden shadow-2xl
+      <div className="relative h-[460px] sm:w-[1000px] rounded-2xl overflow-hidden shadow-2xl
        border border-white z-10">
         <Image
           src={images[index]}

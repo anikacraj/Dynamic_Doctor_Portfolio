@@ -11,6 +11,7 @@ import MobileSlider from "@/components/ui/MobileSlider";
 import adminAboutUs from "@/components/ui/adminAboutUs";
 import AboutUsSection from "@/components/ui/adminAboutUs";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 
 
@@ -110,10 +111,10 @@ export default function Home() {
                 Join as Doctor
               </a>
               <a
-                href="/login"
+                href="/PatientHome"
                 className="px-6 py-3 border border-blue-600 text-blue-600 dark:text-blue-400 rounded-lg font-semibold hover:bg-blue-50 dark:hover:bg-gray-800 transition"
               >
-                Patient Login
+              Go  Patient Page
               </a>
             </motion.div>
           )}
@@ -193,18 +194,20 @@ export default function Home() {
           Join our community — whether to heal or to help.
         </p>
         <div className="flex justify-center gap-4 flex-wrap">
-          <a
-            href="/register"
-            className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-full shadow-lg hover:bg-blue-700 transition"
-          >
-            Doctor Sign Up
-          </a>
-          <a
-            href="/login"
+        {!session?.user && (
+           <Link
+           href="/register"
+           className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-full shadow-lg hover:bg-blue-700 transition"
+         >
+           Doctor Sign Up
+         </Link>
+        )}
+          <Link
+            href="/patientHome"
             className="px-6 py-3 bg-white dark:bg-gray-800 border border-blue-600 text-blue-700 dark:text-blue-300 font-semibold rounded-full hover:bg-blue-50 dark:hover:bg-gray-700 transition"
           >
             Patient Access
-          </a>
+          </Link>
         </div>
 
        

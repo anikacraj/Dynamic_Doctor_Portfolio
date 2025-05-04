@@ -8,6 +8,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import userModel from "@/models/user.model";
 
+
 // 👇 Accept `params` to get the dynamic ID from the route
 export default async function ProfilePage({ params }: { params: { userId: string } }) {
   await dbConnect();
@@ -21,6 +22,8 @@ export default async function ProfilePage({ params }: { params: { userId: string
 
   return (
     <section className="h-full">
+
+      
       <div className="container mx-auto h-full">
         <div className="flex flex-col-reverse xl:flex-row items-center justify-around xl:pt-8 xl:pb-24 xl:mt-15">
           <div className="text-center xl:text-left font-serif space-y-4">

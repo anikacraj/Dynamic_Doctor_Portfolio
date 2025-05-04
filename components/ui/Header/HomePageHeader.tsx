@@ -66,7 +66,7 @@ export default function Header() {
     whileHover={{ scale: 1.1 }}
     className="relative group transition text-gray-800 dark:text-white"
   >
-    <Link href="/demo">Demo Profile</Link>
+    <Link href="/patientHome">Patient Access </Link>
     <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-blue-500 transition-all duration-300 group-hover:w-full"></span>
   </motion.li>
 
@@ -76,7 +76,8 @@ export default function Header() {
       whileHover={{ scale: 1.1 }}
       className="relative group transition text-gray-800 dark:text-white"
     >
-      <Link href={`/${session.user.id}`}>My Profile</Link>
+      <Link href={`/login?callbackUrl=/${session?.user?.id}`}>My Profile</Link>
+
       <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-blue-500 transition-all duration-300 group-hover:w-full"></span>
     </motion.li>
   )}
@@ -87,7 +88,8 @@ export default function Header() {
       whileHover={{ scale: 1.1 }}
       className="relative group transition text-gray-800 dark:text-white"
     >
-      <Link href={`/${session.user.id}/editProfile`}>Edit Profile</Link>
+     <Link href={`/login?callbackUrl=/${session?.user?.id}/editProfile`}>Edit Profile</Link>
+
       <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-blue-500 transition-all duration-300 group-hover:w-full"></span>
     </motion.li>
   )}
@@ -108,7 +110,8 @@ export default function Header() {
         <div className="absolute left-0 mt-2 w-40 bg-white dark:bg-gray-800 shadow-lg rounded-md z-50">
           <ul className="text-sm text-gray-800 dark:text-gray-100">
             <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
-            <Link  href={`/${session.user.id}/appointmentList`}>  Appointment List </Link>
+            <Link href={`/login?callbackUrl=/${session?.user?.id}/appointmentList`}>Appointment List</Link>
+
             </li>
             <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
             <button onClick={() => signOut()}>

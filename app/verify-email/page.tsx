@@ -1,3 +1,4 @@
+// ✅ File: /app/verify-email/page.tsx
 "use client";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";

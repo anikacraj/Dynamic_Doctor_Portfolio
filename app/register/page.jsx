@@ -100,11 +100,11 @@ const Register = () => {
         </div>
 
         <div className="grid gap-2">
-          <Label htmlFor="phoneNo" className="dark:text-gray-200">Phone Number</Label>
+          <Label htmlFor="phoneNo" className="dark:text-gray-200">Register Id </Label>
           <Input
             id="phoneNo"
             type="tel"
-            placeholder="01XXXXXXXXX"
+            placeholder="XXXXXXXXX"
             value={phoneNo}
             onChange={(e) => setPhoneNo(e.target.value)}
             className="dark:bg-gray-700 dark:text-white dark:border-gray-600"
