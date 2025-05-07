@@ -76,7 +76,8 @@ export interface IUser extends Document {
   contactNo?: string;
   bio?: string;
   aboutPicture?: string;
-
+  blocked?:boolean;
+  blockedUntil?:Date;
   // Social
   fbLink?: string;
   instagram?: string;
@@ -141,7 +142,14 @@ const UserSchema: Schema<IUser> = new Schema(
     contactNo: { type: String, unique: true, sparse: true, trim: true },
     specialization: { type: String, trim: true },
     profilePhoto: { type: String },
-
+    blocked: {
+      type: Boolean,
+      default: false,
+    },
+    blockedUntil: {
+      type: Date,
+      default: null,
+    },
     // Social
     linkedin: { type: String, trim: true },
     fbLink: { type: String, trim: true },

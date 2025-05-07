@@ -8,22 +8,28 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import userModel from "@/models/user.model";
 
-
-// 👇 Accept `params` to get the dynamic ID from the route
+// Accept `params` to get the dynamic ID from the route
 export default async function ProfilePage({ params }: { params: { userId: string } }) {
   await dbConnect();
 
-  // ✅ Now fetch by dynamic userId
   const user = await userModel.findById(params.userId);
 
   if (!user) {
     return notFound();
   }
 
+  // If user is blocked and still within the block period
+  if (user.blocked && user.blockedUntil && new Date(user.blockedUntil) > new Date()) {
+    return (
+      <div className="text-center text-red-500 mt-10">
+        <h1 className="text-2xl font-bold">⚠️ This profile is currently blocked.</h1>
+        <p>Access will be restored on {new Date(user.blockedUntil).toLocaleDateString()}</p>
+      </div>
+    );
+  }
+
   return (
     <section className="h-full">
-
-      
       <div className="container mx-auto h-full">
         <div className="flex flex-col-reverse xl:flex-row items-center justify-around xl:pt-8 xl:pb-24 xl:mt-15">
           <div className="text-center xl:text-left font-serif space-y-4">
@@ -42,14 +48,13 @@ export default async function ProfilePage({ params }: { params: { userId: string
             </p>
 
             <div className="flex flex-col xl:flex-row items-center gap-8 mt-3">
-            <Link
-        href="#contact"
-        scroll={true}
-        className="uppercase rounded-lg flex items-center gap-2 border border-amber-500 px-5 py-3 transition-all duration-300 bg-gradient-to-r from-amber-900 to-yellow-600 text-white hover:from-amber-600 hover:to-yellow-500
-         hover:text-black font-serif shadow-md"
-      >
-        Let's Connect With Me
-      </Link>
+              <Link
+                href="#contact"
+                scroll={true}
+                className="uppercase rounded-lg flex items-center gap-2 border border-amber-500 px-5 py-3 transition-all duration-300 bg-gradient-to-r from-amber-900 to-yellow-600 text-white hover:from-amber-600 hover:to-yellow-500 hover:text-black font-serif shadow-md"
+              >
+                Let's Connect With Me
+              </Link>
               <div className="mt-[-30px]">
                 <Social />
               </div>
@@ -60,6 +65,7 @@ export default async function ProfilePage({ params }: { params: { userId: string
             <ProfilePhoto />
           </div>
         </div>
+
         <PhotoGallery />
       </div>
 
