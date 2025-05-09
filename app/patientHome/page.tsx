@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import UserPageHeader from "@/components/ui/Header/UserPageHeader";
 import Header from "@/components/ui/Header/HomePageHeader";
 import Link from "next/link";
+import { ShieldCheck } from "lucide-react";
 
 type User = {
   _id: string;
@@ -15,6 +16,7 @@ type User = {
   profilePhoto?: string;
   phoneNo?: string;
   role?: string;
+  adminVerified?:boolean;
 };
 
 const ShowDoctorList = () => {
@@ -131,6 +133,16 @@ const ShowDoctorList = () => {
                 <div>
                   <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
                     {user.name}
+                     {user.adminVerified && (
+          
+          <span className="relative ml-3   group inline-flex items-center justify-center w-5 h-5 rounded-full bg-gradient-to-tr from-blue-500 via-sky-400 to-blue-600 shadow-md cursor-pointer">
+            <ShieldCheck  className="w-[35px] h-[24px]  text-white" />
+            
+            <span className="absolute bottom-full mb-1 hidden group-hover:flex text-xs text-white bg-gray-900 px-2 py-1 rounded shadow-lg whitespace-nowrap">
+              Verified Medical Professional
+            </span>
+          </span>
+        )}
                   </h2>
                   <p className="text-sm text-blue-600 dark:text-blue-400">
                     {user.specialization || "General Practitioner"}

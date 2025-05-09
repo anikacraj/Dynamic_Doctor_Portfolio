@@ -7,6 +7,7 @@ import { dbConnect } from "@/config/dbConnect";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import userModel from "@/models/user.model";
+import { ShieldCheck } from "lucide-react";
 
 // Accept `params` to get the dynamic ID from the route
 export default async function ProfilePage({ params }: { params: { userId: string } }) {
@@ -37,7 +38,19 @@ export default async function ProfilePage({ params }: { params: { userId: string
 
             <h1 className="text-4xl md:text-5xl font-bold leading-tight text-gray-900 dark:text-white">
               I'm Dr. <br />
-              <span className="text-blue-500 dark:text-accent">{user.name}</span>
+              <span className="text-blue-500 dark:text-accent">{user.name}
+
+                    {user.adminVerified && (
+          
+          <span className="relative ml-3   group inline-flex items-center justify-center w-7 h-7 rounded-full bg-gradient-to-tr from-blue-500 via-sky-400 to-blue-600 shadow-md cursor-pointer">
+            <ShieldCheck  className="w-[35px] h-[24px]  text-white" />
+            
+            <span className="absolute bottom-full mb-1 hidden group-hover:flex text-xs text-white bg-gray-900 px-2 py-1 rounded shadow-lg whitespace-nowrap">
+              Verified Medical Professional
+            </span>
+          </span>
+        )}
+              </span>
             </h1>
 
             <p className="max-w-xl text-lg leading-relaxed text-gray-700 dark:text-gray-300 border-l-4 border-blue-400 pl-4 italic">

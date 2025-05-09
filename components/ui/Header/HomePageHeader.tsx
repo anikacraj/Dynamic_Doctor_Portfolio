@@ -76,7 +76,7 @@ export default function Header() {
       whileHover={{ scale: 1.1 }}
       className="relative group transition text-gray-800 dark:text-white"
     >
-      <Link href={`/login?callbackUrl=/${session?.user?.id}`}>My Profile</Link>
+      <Link href={`/${session?.user?.id}`}>My Profile</Link>
 
       <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-blue-500 transition-all duration-300 group-hover:w-full"></span>
     </motion.li>
