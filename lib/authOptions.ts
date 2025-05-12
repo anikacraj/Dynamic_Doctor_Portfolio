@@ -22,11 +22,20 @@ export const authOptions: AuthOptions = {
 
         const user = await userModel.findOne({ email: credentials.email }).select("+password");
 
-        if (!user) throw new Error("Invalid email or password");
+        if (!user) {
+          throw new Error("Invalid email or password");
+        }
+
+        // ✅ Check if user has verified their email
+        if (!user.isVerified) {
+          throw new Error("Please verify your email before logging in.");
+        }
 
         const isPasswordMatched = await bcrypt.compare(credentials.password, user.password);
 
-        if (!isPasswordMatched) throw new Error("Invalid email or password");
+        if (!isPasswordMatched) {
+          throw new Error("Invalid email or password");
+        }
 
         return {
           id: user._id.toString(),
