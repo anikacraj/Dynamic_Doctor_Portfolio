@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
-import Contact from "@/components/ui/Contact";
-import PhotoGallery from "@/components/ui/PhotoGallery";
-import ProfilePhoto from "@/components/ui/ProfilePhoto";
+import Contact from "./Contact";
+import ProfilePhoto from "./ProfilePhoto";
+import PhotoGallery from "./PhotoGallery";
 import Social from "@/components/ui/social";
 import { dbConnect } from "@/config/dbConnect";
 import Link from "next/link";
@@ -32,13 +32,13 @@ export default async function ProfilePage({ params }: { params: { userId: string
   return (
     <section className="h-full">
       <div className="container mx-auto h-full">
-        <div className="flex flex-col-reverse xl:flex-row items-center justify-around xl:pt-8 xl:pb-24 xl:mt-15">
-          <div className="text-center xl:text-left font-serif space-y-4">
+        <div className=" flex flex-col-reverse xl:flex-row items-center justify-around xl:pt-8 xl:pb-24 xl:mt-15">
+          <div className="text-center xl:text-left font-serif space-y-4 ">
             <span className="text-2xl text-gray-500 dark:text-gray-400 tracking-wide">Hello & welcome</span>
 
-            <h1 className="text-4xl md:text-5xl font-bold leading-tight text-gray-900 dark:text-white">
+            <h1 className="text-3xl md:text-5xl font-bold leading-tight text-gray-900 dark:text-white">
               I'm Dr. <br />
-              <span className="text-blue-500 dark:text-accent">{user.name}
+              <span className="text-blue-500 dark:text-accent ">{user.name}
 
                     {user.adminVerified && (
           
@@ -75,7 +75,7 @@ export default async function ProfilePage({ params }: { params: { userId: string
           </div>
 
           <div>
-            <ProfilePhoto />
+            <ProfilePhoto userId={params.userd} />
           </div>
         </div>
 

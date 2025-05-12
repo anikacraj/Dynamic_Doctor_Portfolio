@@ -144,7 +144,7 @@ export default function Header() {
 
   
         {/* Mobile Menu Icon */}
-        <nav className="xl:hidden ml-4">
+        <nav className="xl:hidden">
           <UserDrawer />
         </nav>
       </div>

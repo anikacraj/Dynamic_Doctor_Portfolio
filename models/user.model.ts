@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Schema, model, models } from "mongoose";
 import crypto from "crypto";
 
 // Contact interface with all required fields
@@ -142,7 +142,7 @@ const UserSchema: Schema<IUser> = new Schema(
     aboutPicture: { type: String },
     contactNo: { type: String, sparse: true, trim: true },
     specialization: { type: String, trim: true },
-    profilePhoto: { type: String },
+  profilePhoto: { type: String, default: "/Drprofile.png" },
     blocked: {
       type: Boolean,
       default: false,

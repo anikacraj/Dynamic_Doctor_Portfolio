@@ -57,13 +57,11 @@ export default function Home() {
   }, [controls]);
 
   return (
-    <div className="w-full min-h-screen flex flex-col bg-white dark:bg-gray-950 text-gray-900 dark:text-white">
-      {/* Header */}
+       <div className="w-full min-h-screen flex flex-col bg-white dark:bg-gray-950 text-gray-900 dark:text-white">
       <Header />
 
       {/* Hero Section */}
-      <section className="flex flex-col sm:flex-row items-center justify-around px-6 sm:px-16 py-16 ">
-        {/* Left Content */}
+      <section className="flex flex-col sm:flex-row items-center justify-between px-6 sm:px-16 py-20 gap-12">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -80,9 +78,11 @@ export default function Home() {
               </>
             ) : (
               <>
-                Bridging Care & Connection at{" "}
-                <br />
-                <span className="text-blue-600"><span className="dark:text-white text-black">🩺DR</span> Port.</span>
+                Bridging Care & <br className="sm:hidden" />
+                Connection at{" "}
+                <span className="text-blue-600">
+                  <span className="dark:text-white text-black">🩺DR</span> Port.
+                </span>
               </>
             )}
           </h1>
@@ -91,7 +91,7 @@ export default function Home() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6, duration: 1 }}
-            className="text-lg sm:text-xl text-gray-700 dark:text-gray-300 font-medium"
+            className="text-base sm:text-lg text-gray-700 dark:text-gray-300 font-medium"
           >
             A modern platform where certified doctors meet patients in need —
             fast, secure, and human-centered care starts here.
@@ -104,23 +104,22 @@ export default function Home() {
               transition={{ delay: 1.2, duration: 1 }}
               className="flex justify-center sm:justify-start gap-4"
             >
-              <a
+              <Link
                 href="/register"
                 className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow hover:bg-blue-700 transition"
               >
                 Join as Doctor
-              </a>
-              <a
-                href="/PatientHome"
+              </Link>
+              <Link
+                href="/patientHome"
                 className="px-6 py-3 border border-blue-600 text-blue-600 dark:text-blue-400 rounded-lg font-semibold hover:bg-blue-50 dark:hover:bg-gray-800 transition"
               >
-              Go  Patient Page
-              </a>
+                Go Patient Page
+              </Link>
             </motion.div>
           )}
         </motion.div>
 
-        {/* Right Image */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -137,8 +136,8 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* Why Choose DR Port Section */}
-      <section className="py-12 px-6 sm:px-16 bg-blue-50 dark:bg-gray-900 text-center">
+      {/* Why DR Port Section */}
+      <section className="py-16 px-6 sm:px-16 bg-blue-50 dark:bg-gray-900 text-center">
         <motion.h2
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -154,7 +153,12 @@ export default function Home() {
           className="text-lg sm:text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto"
         >
           Whether you're a doctor seeking visibility or a patient seeking care,
-          DR Port connects you to what matters — <span className="font-semibold">real-time interaction, verified professionals, and accessible medical support</span> — anytime, anywhere.
+          DR Port connects you to what matters —{" "}
+          <span className="font-semibold">
+            real-time interaction, verified professionals, and accessible
+            medical support
+          </span>{" "}
+          — anytime, anywhere.
         </motion.p>
       </section>
 
@@ -172,36 +176,39 @@ export default function Home() {
         <MobileSlider />
       </section>
 
+      {/* About Us Section */}
       <div className="mt-8">
-<AboutUsSection />
-</div>
+        <AboutUsSection />
+      </div>
+
       {/* CTA Section */}
-      <section className="mt-10 px-9 h-[400px] sm:px-16 py-12 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-gray-800 dark:to-gray-900 
-      text-center rounded-t-3xl">
-      <motion.h3
-      className="text-3xl mt-6 font-bold mb-4"
-      variants={container}
-      initial="hidden"
-      animate={controls}
-    >
-      {sentence.split("").map((char, index) => (
-        <motion.span key={index} variants={child}>
-          {char === " " ? "\u00A0" : char}
-        </motion.span>
-      ))}
-    </motion.h3>
+      <section className="mt-16 px-6 sm:px-16 py-16 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-gray-800 dark:to-gray-900 text-center rounded-t-3xl">
+        <motion.h3
+          className="text-3xl font-bold mb-4"
+          variants={container}
+          initial="hidden"
+          animate="visible"
+        >
+          {sentence.split("").map((char, index) => (
+            <motion.span key={index} variants={child}>
+              {char === " " ? "\u00A0" : char}
+            </motion.span>
+          ))}
+        </motion.h3>
+
         <p className="text-lg text-gray-800 dark:text-gray-300 mb-6">
           Join our community — whether to heal or to help.
         </p>
+
         <div className="flex justify-center gap-4 flex-wrap">
-        {!session?.user && (
-           <Link
-           href="/register"
-           className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-full shadow-lg hover:bg-blue-700 transition"
-         >
-           Doctor Sign Up
-         </Link>
-        )}
+          {!session?.user && (
+            <Link
+              href="/register"
+              className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-full shadow-lg hover:bg-blue-700 transition"
+            >
+              Doctor Sign Up
+            </Link>
+          )}
           <Link
             href="/patientHome"
             className="px-6 py-3 bg-white dark:bg-gray-800 border border-blue-600 text-blue-700 dark:text-blue-300 font-semibold rounded-full hover:bg-blue-50 dark:hover:bg-gray-700 transition"
@@ -209,11 +216,7 @@ export default function Home() {
             Patient Access
           </Link>
         </div>
-
-       
       </section>
-
-     
     </div>
   );
 }

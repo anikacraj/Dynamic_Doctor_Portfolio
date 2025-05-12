@@ -1,7 +1,7 @@
 import { dbConnect } from "@/config/dbConnect";
 import userModel from "@/models/user.model";
 import { NextRequest, NextResponse } from "next/server";
-import mongoose from "mongoose"; // Added import
+import mongoose from "mongoose";
 
 interface ContactData {
   name: string;
@@ -9,26 +9,27 @@ interface ContactData {
   address?: string;
   phoneNo?: string;
   message: string;
-  userId: string;
 }
 
 export async function POST(request: NextRequest) {
   await dbConnect();
 
   try {
-    const { name, email, address, phoneNo, message, userId }: ContactData = await request.json();
-    
-    // Enhanced validation
-    if (!name?.trim() || !email?.trim() || !message?.trim()) {
-      return NextResponse.json(
-        { error: "Name, email, and message are required fields" },
-        { status: 400 }
-      );
-    }
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get("userId");
 
     if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
       return NextResponse.json(
         { error: "Valid doctor ID is required" },
+        { status: 400 }
+      );
+    }
+
+    const { name, email, address, phoneNo, message }: ContactData = await request.json();
+
+    if (!name?.trim() || !email?.trim() || !message?.trim()) {
+      return NextResponse.json(
+        { error: "Name, email, and message are required fields" },
         { status: 400 }
       );
     }
@@ -39,7 +40,7 @@ export async function POST(request: NextRequest) {
       address: address?.trim() || "",
       phoneNo: phoneNo?.trim() || "",
       message: message.trim(),
-      status: "pending", // Explicit default
+      status: "pending",
       createdAt: new Date(),
     };
 
@@ -56,29 +57,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get the newly added contact
     const addedContact = updatedUser.contacts[updatedUser.contacts.length - 1];
 
     return NextResponse.json(
-      { 
-        message: "Appointment request submitted successfully", 
-        contact: addedContact 
-      },
+      { message: "Appointment request submitted successfully", contact: addedContact },
       { status: 201 }
     );
 
   } catch (error: any) {
-    console.error("Contact submission error:", {
-      message: error.message,
-      stack: error.stack
-    });
-    
+    console.error("Contact submission error:", error);
+
     return NextResponse.json(
-      { 
-        error: error.message.includes("duplicate") 
-          ? "This appointment already exists" 
-          : "Internal server error" 
-      },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }

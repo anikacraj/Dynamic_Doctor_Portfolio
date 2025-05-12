@@ -17,6 +17,7 @@ export default function Nav() {
     { name: "About Me", path: `/${userId}/about` },
     { name: "Work", path: `/${userId}/work` },
     { name: "Chamber", path: `/${userId}/chamber` },
+    { name: "Chamber", path: `/${userId}/chamber` },
  
   ]
 
@@ -24,7 +25,7 @@ export default function Nav() {
 
   return (
     <nav className="flex gap-8 flex-wrap">
-      <p>dsghiusah uygsdiusd uyg </p>
+      
       {links.map((link, index) => (
         <Link
           href={link.path}

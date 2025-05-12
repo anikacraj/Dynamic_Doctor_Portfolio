@@ -1,8 +1,7 @@
-'use client';
+"use client";
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useSession } from "next-auth/react";
+import { useRouter, useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { FiMail, FiPhone, FiMapPin, FiUser, FiMessageSquare } from 'react-icons/fi';
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaYoutube } from 'react-icons/fa';
@@ -11,10 +10,9 @@ import Image from 'next/image';
 interface ContactFormData {
   name: string;
   email: string;
-  address: string;
-  phoneNo: string;
+  address?: string;
+  phoneNo?: string;
   message: string;
-  userId: string;
 }
 
 export default function Contact() {
@@ -23,96 +21,51 @@ export default function Contact() {
     email: '',
     address: '',
     phoneNo: '',
-    message: '',
-    userId: ''
+    message: ''
   });
-  
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<{
-    success?: boolean;
-    message?: string;
-  }>({});
 
-  const { data: session } = useSession();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{ success?: boolean; message?: string }>({});
   const router = useRouter();
+  const params = useParams();
+  const doctorId = params?.userId;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ 
-      ...prev, 
-      [name]: value,
-      userId: session?.user?.id || ''
-    }));
-  };
-  
-
-  const validateForm = (): boolean => {
-    if (!formData.name.trim()) {
-      setSubmitStatus({ success: false, message: 'Name is required' });
-      return false;
-    }
-    if (!formData.email.trim() || !/^\S+@\S+\.\S+$/.test(formData.email)) {
-      setSubmitStatus({ success: false, message: 'Valid email is required' });
-      return false;
-    }
-    if (!formData.message.trim()) {
-      setSubmitStatus({ success: false, message: 'Message is required' });
-      return false;
-    }
-    if (!formData.userId) {
-      setSubmitStatus({ success: false, message: 'Doctor ID is missing' });
-      return false;
-    }
-    return true;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) return;
-    
+    if (!doctorId) {
+      setSubmitStatus({ success: false, message: 'Doctor ID is missing.' });
+      return;
+    }
+
     setIsSubmitting(true);
     setSubmitStatus({});
 
     try {
-      const response = await fetch('/api/contact', {
+      const response = await fetch(`/api/contact?userId=${doctorId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
 
       const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Failed to send appointment request');
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to send appointment request');
-      }
-
-      setSubmitStatus({
-        success: true,
-        message: 'Appointment request sent successfully!'
-      });
-      
-      // Reset form
-      setFormData({
-        name: '',
-        email: '',
-        address: '',
-        phoneNo: '',
-        message: '',
-        userId: session?.user?.id || ''
-      });
-
+      setSubmitStatus({ success: true, message: 'Appointment request sent successfully!' });
+      setFormData({ name: '', email: '', address: '', phoneNo: '', message: '' });
     } catch (error: any) {
-      setSubmitStatus({
-        success: false,
-        message: error.message || 'Failed to send request'
-      });
+      setSubmitStatus({ success: false, message: error.message || 'Failed to send request' });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="relative border-1 sm:border-2 border-blue-500 rounded-2xl min-h-screen sm:min-h-[20vh] 
+      <div className="relative border-1 sm:border-2 border-blue-500 rounded-2xl min-h-screen sm:min-h-[20vh] 
       w-full sm:p-15 sm:pt-18 sm:w-3/4 mx-auto mt-3 bg-gradient-to-br from-[#d0f4de] via-[#fef9ef] to-[#fcbf49] 
       flex items-center justify-center xl:p-6 p-2 overflow-hidden">
 
@@ -290,3 +243,4 @@ function FormField({ icon, label, name, type, value, onChange, required = false 
     </div>
   );
 }
+
