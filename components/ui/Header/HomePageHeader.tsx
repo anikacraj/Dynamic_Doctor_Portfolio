@@ -111,7 +111,13 @@ export default function Header() {
           <ul className="text-sm text-gray-800 dark:text-gray-100">
             <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
             <Link href={`/login?callbackUrl=/${session?.user?.id}/appointmentList`}>Appointment List</Link>
+            
+            
 
+            </li>
+
+            <li>
+              <Link href={`/login?callbackUrl=/${session?.user?.id}/blog`}>Create Blog</Link>
             </li>
             <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
             <button onClick={() => signOut()}>

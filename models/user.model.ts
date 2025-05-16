@@ -1,5 +1,6 @@
 import mongoose, { Schema, model, models } from "mongoose";
 import crypto from "crypto";
+import { text } from "stream/consumers";
 
 // Contact interface with all required fields
 interface Contact {
@@ -16,6 +17,20 @@ interface Contact {
   createdAt: Date;
   updatedAt?: Date;
 }
+
+
+interface Blog {
+  _id?: mongoose.Types.ObjectId;
+  heading:string;
+
+  like: number;       // ✅ changed from string to number
+  dislike: number;    // ✅ changed from string to number
+  text: string;
+  images?: string[];
+  createdAt: Date;
+  updatedAt?: Date;
+}
+
 
 
 
@@ -96,6 +111,7 @@ export interface IUser extends Document {
 
   // Appointments
   contacts?: Contact[];
+   blogs?: Blog[];
 }
 
 // Contact Schema
@@ -120,6 +136,20 @@ const ContactSchema = new Schema({
   versionKey: false
 });
 
+// Blog Schema
+const BlogSchema = new Schema<Blog>(
+  {
+    like: { type: Number, default: 0 },
+
+    dislike: { type: Number, default: 0 },
+    text: { type: String, required: true },
+    heading: { type: String, required: true },
+    images:{ type: [String], default: [] },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date },
+  },
+  { _id: true }
+);
 
 const UserSchema: Schema<IUser> = new Schema(
   {
@@ -169,9 +199,13 @@ const UserSchema: Schema<IUser> = new Schema(
     work: { type: [ { role: String, college: String, day: String, time: String, collegePhoneNumber: String } ], default: [] },
     experience: { type: [ { role: String, college: String, startingYear: String, endingYear: String } ], default: [] },
     chamber: { type: [ { place: String, day: String, time: String, bookContact: String } ], default: [] },
-
+  blogs: {
+    type: [BlogSchema],
+    default: [],
+  },
     // Appointments
     contacts: { type: [ContactSchema], default: [] }
+    
   },
   {
     timestamps: true,

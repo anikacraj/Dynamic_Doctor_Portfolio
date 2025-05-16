@@ -25,6 +25,20 @@ export interface IAdmin extends Document {
   getVerificationToken(): string;
 }
 
+// About Schema
+const AboutSchema = new Schema<About>(
+  {
+    heading: { type: String, required: true },
+    description: { type: String, required: true },
+    mission: { type: String, required: true },
+    vision: { type: String, required: true },
+    team: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date },
+  },
+  { _id: true }
+);
+
 const AdminSchema: Schema<IAdmin> = new mongoose.Schema({
   name: {
     type: String,
@@ -52,7 +66,11 @@ const AdminSchema: Schema<IAdmin> = new mongoose.Schema({
   thumbnail :{
 type:String ,
   },
-  about:{type:[{heading:String,description:String,MissingSlotContext:String,vision:String,team:String}],default:[]},
+  
+   about: {
+    type: [AboutSchema],
+    default: [],
+  },
   
 });
 
