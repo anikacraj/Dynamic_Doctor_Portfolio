@@ -26,17 +26,17 @@ export default function UserPageHeader() {
           <Nav /> {/* This now renders for all users */}
 
           {/* Optional: Only show button if user is logged in */}
-          {session?.user?.id && (
-            <Link href={`/${session.user.id}/chamber`}>
+          
+            <Link href='/MindMateAI'>
               <Button
                 variant='outline'
                 size='lg'
                 className='text-cyan-800 dark:text-cyan-300 text-xl hover:text-black dark:hover:text-white'
               >
-                Chamber
+                🤖 MindMate Al
               </Button>
             </Link>
-          )}
+          
         </div>
 
         <div className='xl:hidden'>

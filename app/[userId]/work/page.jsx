@@ -65,6 +65,7 @@ export default function Page() {
               <p className="text-gray-500 italic font-stretch-50%">{wk.time}</p>
             </motion.div>
           ))}
+          
       </div>
     </div>
   )

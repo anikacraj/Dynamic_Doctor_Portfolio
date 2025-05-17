@@ -1,46 +1,72 @@
-import { NextResponse } from "next/server";
-import { dbConnect } from "@/config/dbConnect";
-import Blog from "@/models/user.model";
+import { NextRequest, NextResponse } from 'next/server';
+import mongoose from 'mongoose';
+import { dbConnect } from '@/config/dbConnect';
+import userModel from '@/models/user.model';
 
-// Define the config to allow larger body size
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: "10mb", // Increase the body size limit to 10 MB
-    },
-  },
-};
+// Connect to DB
+await dbConnect();
 
-// POST create a new blog (stored in MongoDB)
-export async function POST(request: Request) {
+// POST: Create a new blog for a user
+export async function POST(req: NextRequest, { params }: { params: { userId: string } }) {
   try {
-    await dbConnect();
+    const userId = params.userId;
 
-    const formData = await request.formData();
-    const heading = formData.get("heading");
-    const text = formData.get("text");
-
-    const imageFiles = formData.getAll("images") as File[];
-    const imageUrls = await Promise.all(imageFiles.map(async (file) => URL.createObjectURL(file)));
-
-    if (!heading || !text) {
-      return NextResponse.json({ error: "Heading and text are required." }, { status: 400 });
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return NextResponse.json({ error: 'Invalid User ID' }, { status: 400 });
     }
 
-    // Create and save the blog in MongoDB
-    const newBlog = await Blog.create({
+    const body = await req.json();
+    const { heading, text, images } = body;
+
+    if (!heading || !text) {
+      return NextResponse.json({ error: 'Heading and Text are required.' }, { status: 400 });
+    }
+
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return NextResponse.json({ error: 'User not found.' }, { status: 404 });
+    }
+
+    const newBlog = {
       heading,
       text,
-      images: imageUrls,
+      images: images || [],
       like: 0,
       dislike: 0,
       createdAt: new Date(),
-      updatedAt: new Date()
-    });
+    };
 
-    return NextResponse.json(newBlog);
+    user.blogs.push(newBlog);
+    await user.save();
+
+    return NextResponse.json({ message: 'Blog created successfully.', blog: newBlog }, { status: 201 });
+
+  } catch (error: any) {
+    console.error('Error creating blog:', error);
+    return NextResponse.json({ error: 'Internal server error.' }, { status: 500 });
+  }
+}
+
+// GET: Fetch all blogs from all users
+export async function GET() {
+  try {
+    const users = await userModel.find({}, { blogs: 1, _id: 0, name: 1 });
+
+    // Flatten blogs and include user name (optional)
+    const allBlogs = users.flatMap((user: any) =>
+      user.blogs.map((blog: any) => ({
+        ...blog.toObject(),
+        author: user.name,
+      }))
+    );
+
+    // Sort blogs by newest first
+    allBlogs.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+    return NextResponse.json(allBlogs, { status: 200 });
+
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Failed to create blog." }, { status: 500 });
+    console.error('Error fetching blogs:', error);
+    return NextResponse.json({ error: 'Internal server error.' }, { status: 500 });
   }
 }

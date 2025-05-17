@@ -9,6 +9,8 @@ import { FaAddressBook } from "react-icons/fa6";
 import { usePathname } from "next/navigation";
 import UserDrawer from "../UserDrawer";
 import { motion } from "framer-motion";
+import { BrainCircuit } from 'lucide-react';
+import { Bot } from 'lucide-react';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -69,6 +71,17 @@ export default function Header() {
     <Link href="/patientHome">Patient Access </Link>
     <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-blue-500 transition-all duration-300 group-hover:w-full"></span>
   </motion.li>
+
+ <motion.li
+  whileHover={{ scale: 1.08 }}
+  className="relative group flex items-center gap-2 cursor-pointer px-3 py-1 text-blue-700 dark:text-blue-300 font-semibold transition duration-300"
+>
+ 
+  <Link href="/MindMateAI" className="flex items-center">
+    🤖 MindMate Al
+  </Link>
+  <span className="absolute left-0 -bottom-0.5 h-0.5 bg-blue-500 rounded-full transition-all duration-300 w-0 group-hover:w-full"></span>
+</motion.li>
 
   {/* My Profile */}
   {session?.user && (
