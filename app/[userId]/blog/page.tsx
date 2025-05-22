@@ -11,27 +11,26 @@ export default function BlogPage() {
   const params = useParams();
   const router = useRouter();
 
-  const [isAuthorized, setIsAuthorized] = useState(false);
   const [blogs, setBlogs] = useState([]);
   const [loadingBlogs, setLoadingBlogs] = useState(true);
 
   useEffect(() => {
     if (status === 'authenticated') {
       const sessionUserId = session?.user?.id;
-      const paramUserId = params.userId;
+    const paramUserId = params.userId as string;
 
-      if (sessionUserId === paramUserId) {
-        setIsAuthorized(true);
-        fetchUserBlogs(paramUserId);
-      } else {
+      // If logged-in user is not the blog owner, redirect to unauthorized
+      if (sessionUserId !== paramUserId) {
         router.push('/unauthorized');
+      } else {
+        fetchUserBlogs(paramUserId);
       }
     }
   }, [session, status, params.userId]);
 
   const fetchUserBlogs = async (userId: string) => {
     try {
-      const res = await fetch(`/api/users/${userId}/Blog/CreateBlog`, { cache: 'no-store' });
+      const res = await fetch(`/api/users/${userId}/blog/CreateBlog`, { cache: 'no-store' });
       if (!res.ok) throw new Error('Failed to fetch blogs');
       const data = await res.json();
       setBlogs(data);
@@ -43,26 +42,24 @@ export default function BlogPage() {
   };
 
   const handleDelete = async (blogId: string) => {
-  const confirmDelete = confirm('Are you sure you want to delete this blog?');
-  if (!confirmDelete) return;
+    const confirmDelete = confirm('Are you sure you want to delete this blog?');
+    if (!confirmDelete) return;
 
-  try {
-    const res = await fetch(`/api/blogs/${blogId}`, {
-      method: 'DELETE',
-    });
+    try {
+      const res = await fetch(`/api/blogs/${blogId}`, {
+        method: 'DELETE',
+      });
 
-    if (!res.ok) throw new Error('Failed to delete blog');
+      if (!res.ok) throw new Error('Failed to delete blog');
 
-    setBlogs((prev) => prev.filter((b: any) => b._id !== blogId));
-  } catch (error) {
-    console.error('Delete error:', error);
-    alert('Failed to delete blog.');
-  }
-};
-
+      setBlogs((prev) => prev.filter((b: any) => b._id !== blogId));
+    } catch (error) {
+      console.error('Delete error:', error);
+      alert('Failed to delete blog.');
+    }
+  };
 
   if (status === 'loading') return <div className="p-6">Loading...</div>;
-  if (!isAuthorized) return null;
 
   return (
     <motion.div
@@ -86,73 +83,73 @@ export default function BlogPage() {
       ) : blogs.length === 0 ? (
         <p className="text-gray-500">You haven't created any blogs yet.</p>
       ) : (
-<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {blogs.map((blog: any, index) => (
+            <motion.div
+              key={blog._id}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              initial={{ y: 30, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: index * 0.1, duration: 0.4 }}
+              className="bg-white shadow-lg rounded-xl overflow-hidden flex flex-col"
+            >
+              <Link
+                href={`/${params.userId}/blog/${blog._id}`}
+                onClick={async () => {
+                  if (session?.user?.id) {
+                    try {
+                      await fetch(`/api/blog/${blog._id}/click`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ viewerId: session.user.id }),
+                      });
+                    } catch (err) {
+                      console.error('Failed to count blog click:', err);
+                    }
+                  }
+                }}
+              >
+                {blog.images && blog.images.length > 0 ? (
+                  <img
+                    src={blog.images[0]}
+                    alt="Blog Image"
+                    className="w-full h-48 object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-48 bg-gray-200 flex items-center justify-center text-gray-400 text-sm">
+                    No Image
+                  </div>
+                )}
+                <h2 className="text-xl font-semibold text-gray-800 mb-2 line-clamp-1 px-4 py-2">
+                  {blog.heading}
+                </h2>
+              </Link>
 
-{blogs.map((blog: any, index) => (
-  <motion.div
-    key={blog._id}
-    whileHover={{ scale: 1.02 }}
-    whileTap={{ scale: 0.98 }}
-    initial={{ y: 30, opacity: 0 }}
-    animate={{ y: 0, opacity: 1 }}
-    transition={{ delay: index * 0.1, duration: 0.4 }}
-    className="bg-white shadow-lg rounded-xl overflow-hidden flex flex-col"
-  >
-    {/* Wrap image and title inside Link */}
-    <Link href={`/${params.userId}/blog/${blog._id}`}>
-    
-        {/* Blog Image */}
-        {blog.images && blog.images.length > 0 ? (
-          <img
-            src={blog.images[0]}
-            alt="Blog Image"
-            className="w-full h-48 object-cover"
-          />
-        ) : (
-          <div className="w-full h-48 bg-gray-200 flex items-center justify-center text-gray-400 text-sm">
-            No Image
-          </div>
-        )}
+              <div className="text-sm text-gray-600 mb-2 flex justify-between px-4">
+                <span>click {blog.like ?? 0}</span>
+                <span className="text-xs">
+                  {blog.createdAt ? new Date(blog.createdAt).toLocaleString() : 'N/A'}
+                </span>
+              </div>
 
-        {/* Title */}
-        <h2 className="text-xl font-semibold text-gray-800 mb-2 line-clamp-1 px-4 py-2">
-          {blog.heading}
-        </h2>
-     
-    </Link>
-
-    {/* Like/Dislike/Time */}
-    <div className="text-sm text-gray-600 mb-2 flex justify-between px-4">
-      <div className="flex gap-3">
-        <span>👍 {blog.likes ?? 0}</span>
-        <span>👎 {blog.dislikes ?? 0}</span>
-      </div>
-      <span className="text-xs">
-        {blog.createdAt ? new Date(blog.createdAt).toLocaleString() : 'N/A'}
-      </span>
-    </div>
-
-    {/* Action Buttons */}
-    <div className="flex justify-between mt-2 px-4 pb-4">
-      <button
-        onClick={() => router.push(`/${params.userId}/blog/${blog._id}/edit`)}
-        className="text-blue-600 hover:underline"
-      >
-        Edit
-      </button>
-      <button
-        onClick={() => handleDelete(blog._id)}
-        className="text-red-600 hover:underline"
-      >
-        Delete
-      </button>
-    </div>
-  </motion.div>
-))}
-
-</div>
-
-
+              <div className="flex justify-between mt-2 px-4 pb-4">
+                <button
+                  onClick={() => router.push(`/${params.userId}/blog/${blog._id}/edit`)}
+                  className="text-blue-600 hover:underline"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(blog._id)}
+                  className="text-red-600 hover:underline"
+                >
+                  Delete
+                </button>
+              </div>
+            </motion.div>
+          ))}
+        </div>
       )}
     </motion.div>
   );

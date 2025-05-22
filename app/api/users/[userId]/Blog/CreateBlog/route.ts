@@ -31,6 +31,7 @@ export async function POST(req: NextRequest, { params }: { params: { userId: str
       heading,
       text,
       images: images || [],
+      click: 0,
       like: 0,
       dislike: 0,
       createdAt: new Date(),
@@ -47,26 +48,31 @@ export async function POST(req: NextRequest, { params }: { params: { userId: str
   }
 }
 
-// GET: Fetch all blogs from all users
-export async function GET() {
+// GET: Fetch blogs of a specific user
+export async function GET(req: NextRequest, { params }: { params: { userId: string } }) {
   try {
-    const users = await userModel.find({}, { blogs: 1, _id: 0, name: 1 });
+    const userId = params.userId;
 
-    // Flatten blogs and include user name (optional)
-    const allBlogs = users.flatMap((user: any) =>
-      user.blogs.map((blog: any) => ({
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return NextResponse.json({ error: 'Invalid User ID' }, { status: 400 });
+    }
+
+    const user = await userModel.findById(userId, { blogs: 1, name: 1 });
+    if (!user) {
+      return NextResponse.json({ error: 'User not found.' }, { status: 404 });
+    }
+
+    const userBlogs = user.blogs
+      .map((blog: any) => ({
         ...blog.toObject(),
         author: user.name,
       }))
-    );
+      .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-    // Sort blogs by newest first
-    allBlogs.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
-    return NextResponse.json(allBlogs, { status: 200 });
+    return NextResponse.json(userBlogs, { status: 200 });
 
   } catch (error) {
-    console.error('Error fetching blogs:', error);
+    console.error('Error fetching user blogs:', error);
     return NextResponse.json({ error: 'Internal server error.' }, { status: 500 });
   }
 }

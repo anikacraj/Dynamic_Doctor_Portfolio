@@ -22,7 +22,7 @@ interface Contact {
 interface Blog {
   _id?: mongoose.Types.ObjectId;
   heading:string;
-
+ click:number;
   like: number;       // ✅ changed from string to number
   dislike: number;    // ✅ changed from string to number
   text: string;
@@ -139,8 +139,8 @@ const ContactSchema = new Schema({
 // Blog Schema
 const BlogSchema = new Schema<Blog>(
   {
+    click :{type:Number,default:0},
     like: { type: Number, default: 0 },
-
     dislike: { type: Number, default: 0 },
     text: { type: String, required: true },
     heading: { type: String, required: true },

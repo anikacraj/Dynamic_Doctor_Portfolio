@@ -20,7 +20,7 @@ export default function Page() {
     }
 
     try {
-      const response = await fetch(`/api/users/${userId}/Blog/CreateBlog`, {
+      const response = await fetch(`/api/users/${userId}/blog/CreateBlog`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
