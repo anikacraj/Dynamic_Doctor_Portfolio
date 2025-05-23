@@ -15,6 +15,7 @@ interface Blog {
 export default function BlogDetailPage() {
  const { userId, blogId } = useParams() as { userId: string; blogId: string };
   const [blog, setBlog] = useState<Blog | null>(null);
+   const [updatedAt, setUpdatedAt] = useState<string | null>(null);
   const [doctorName, setDoctorName] = useState('');
   const [loading, setLoading] = useState(true);
 
@@ -26,6 +27,7 @@ export default function BlogDetailPage() {
         if (res.ok) {
           setBlog(data.blog);
           setDoctorName(data.doctorName);
+           setUpdatedAt(new Date(data.blog.updatedAt).toLocaleString()); 
         } else {
           console.error('Error loading blog:', data.error);
         }
@@ -62,6 +64,13 @@ export default function BlogDetailPage() {
       <p className="text-gray-600 text-sm mb-2">
         By Dr. {doctorName} • {new Date(blog.createdAt).toLocaleDateString()} • views: {blog.like}
       </p>
+
+<div>
+      {updatedAt && (
+        <p className="text-sm text-gray-500 mt-4">Last modified: {updatedAt}</p>
+      )}
+    </div>
+
 
       <hr className="my-4" />
 

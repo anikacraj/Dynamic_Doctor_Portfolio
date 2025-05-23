@@ -1,6 +1,8 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { formatDistanceToNow } from 'date-fns';
+
 
 interface Blog {
   _id: string;
@@ -10,7 +12,9 @@ interface Blog {
   doctorId: string;
   doctorName: string;
   createdAt: string;
+  updatedAt?: string
   like: number;
+
 }
 
 export default function PatientHome() {
@@ -100,10 +104,17 @@ export default function PatientHome() {
                 </h3>
 
                 {/* Doctor Name & Time */}
-                <p className="text-sm text-gray-600 mb-2">
-                  By Dr. {blog.doctorName} •{' '}
-                  {new Date(blog.createdAt).toLocaleDateString()}
-                </p>
+{/* Doctor Name & Timestamps */}
+<p className="text-sm text-gray-600 mb-1">
+  By Dr. {blog.doctorName}
+</p>
+              <span className="text-xs">
+    {blog.updatedAt
+      ? `Last updated: ${new Date(blog.updatedAt).toLocaleDateString()}`
+      : blog.createdAt
+      ? `Created: ${new Date(blog.createdAt).toLocaleDateString()}`
+      : 'N/A'}
+  </span>
 
                 {/* Blog Preview */}
                 <p className="text-sm text-gray-700 flex-1 mb-3">

@@ -17,6 +17,7 @@ export default function Nav() {
     { name: "About Me", path: `/${userId}/about` },
     { name: "Work", path: `/${userId}/work` },
     { name: "Chamber", path: `/${userId}/chamber` },
+    { name: "Blog", path: `/${userId}/blog` },
     
  
   ]

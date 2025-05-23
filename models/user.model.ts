@@ -148,7 +148,8 @@ const BlogSchema = new Schema<Blog>(
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date },
   },
-  { _id: true }
+  { _id: true },
+ 
 );
 
 const UserSchema: Schema<IUser> = new Schema(
