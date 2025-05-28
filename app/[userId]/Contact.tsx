@@ -13,6 +13,7 @@ interface ContactFormData {
   address?: string;
   phoneNo?: string;
   message: string;
+   patientDate?: string; 
 }
 
 export default function Contact() {
@@ -21,7 +22,8 @@ export default function Contact() {
     email: '',
     address: '',
     phoneNo: '',
-    message: ''
+    message: '',
+    patientDate: ''
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -56,7 +58,7 @@ export default function Contact() {
       if (!response.ok) throw new Error(data.error || 'Failed to send appointment request');
 
       setSubmitStatus({ success: true, message: 'Appointment request sent successfully!' });
-      setFormData({ name: '', email: '', address: '', phoneNo: '', message: '' });
+      setFormData({ name: '', email: '', address: '', phoneNo: '', message: '',patientDate:'' });
     } catch (error: any) {
       setSubmitStatus({ success: false, message: error.message || 'Failed to send request' });
     } finally {
@@ -145,6 +147,16 @@ export default function Contact() {
               {submitStatus.message}
             </div>
           )}
+
+<FormField
+  icon={<FiMessageSquare className="text-gray-500" />}
+  label="Preferred Appointment Date"
+  name="patientDate"
+  type="date"
+  value={formData.patientDate || ''}
+  onChange={handleChange}
+  required
+/>
 
           <FormField
             icon={<FiUser className="text-gray-500" />}

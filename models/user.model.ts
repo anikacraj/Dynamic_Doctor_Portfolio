@@ -11,11 +11,13 @@ interface Contact {
   phoneNo: string;
   message?: string; // Patient's original message
   status: 'pending' | 'accepted' | 'rejected';
+ patientDate?: string;
   doctorMessage?: string; // Doctor's response message
   date?: string; // Scheduled date (YYYY-MM-DD format)
   time?: string; // Scheduled time (HH:MM format)
   createdAt: Date;
   updatedAt?: Date;
+  
 }
 
 
@@ -127,6 +129,7 @@ const ContactSchema = new Schema({
     default: 'pending' 
   },
   doctorMessage: { type: String, trim: true }, // Added for doctor's response
+  patientDate: { type: String, trim: true },
   date: { type: String, trim: true }, // Added for scheduled date
   time: { type: String, trim: true }, // Added for scheduled time
   createdAt: { type: Date, default: Date.now, immutable: true },
