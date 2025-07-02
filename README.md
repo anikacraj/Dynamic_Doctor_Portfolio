@@ -1,160 +1,172 @@
-# 🧠 Artificial Intelligence Course - Final Report
 
-> A comprehensive summary of everything we learned in our AI course.
+🧠 Artificial Intelligence Course - Final Report
+📚 Course Title: Artificial Intelligence
+👨‍🏫 Course Instructor: Rajorshi Projojal 
+📆 Course Duration: Jan 2025 to June 2025
+🧾 Submitted by: Anik Chowdhury
 
----
 
-## 📄 Course Information
+📌 Purpose of the Course
+The main goal of this course is to introduce students to the fundamental concepts, methodologies, and real-world applications of Artificial Intelligence (AI). It aims to build a solid foundation in both theoretical understanding and practical implementation of AI techniques such as:
 
-- **📚 Course Title:** Artificial Intelligence  
-- **👨‍🏫 Instructor:** Rajorshi Projojal  
-- **📆 Duration:** January 2025 – June 2025  
-- **🧾 Submitted by:** Anik Chowdhury  
+Search and optimization algorithms
 
----
+Game-playing and adversarial search
 
-## 📌 Purpose of the Course
+Logic and reasoning
 
-The purpose of this course is to introduce the foundational concepts of **Artificial Intelligence**, including how intelligent agents operate, search algorithms, logic-based reasoning, and machine learning. The course prepares students to:
+Constraint satisfaction
 
-- Understand real-world AI applications  
-- Implement classical search and optimization algorithms  
-- Apply game-theory and logical reasoning techniques  
-- Work with constraint-based models  
-- Explore the basics of reinforcement learning and robotics  
+Robotics and intelligent systems
 
----
+Machine learning (specifically reinforcement learning)
 
-## 📘 What We Learned From This Course
+By the end of the course, students are expected to design basic intelligent agents, solve complex AI problems, and analyze AI systems' behavior and efficiency.
 
----
 
-### 🧠 1. Introduction to AI
+📘 What We Learned From This Course
 
-#### 🤖 How AI Helps Us
-Artificial Intelligence improves daily life by automating processes, predicting outcomes, and learning patterns from data.  
-It is used in:
+🧠 1. Introduction to AI
 
-- ✅ Healthcare: Diagnostic tools, patient monitoring  
-- ✅ Finance: Fraud detection, loan predictions  
-- ✅ Education: Adaptive learning systems  
-- ✅ Transport: Autonomous vehicles  
-- ✅ Entertainment: Personalized recommendations  
+🤖 How AI Helps Us
+Artificial Intelligence helps automate tasks, make predictions, recommend actions, and mimic human intelligence. It is widely used in areas like:
 
-#### 🧪 Examples of AI in Daily Life
+Healthcare (diagnostic tools)
 
-- **📍 Google Maps:** Route optimization using real-time data  
-- **🎙️ Voice Assistants:** Siri, Alexa using NLP  
-- **🎥 Netflix, YouTube:** Content recommendations  
-- **📧 Gmail:** Spam detection using classification algorithms  
+Finance (fraud detection, credit scoring)
 
-#### 🧮 Types of AI Algorithms
+Education (adaptive learning systems)
 
-- Search & Optimization (BFS, A*, Hill Climbing)  
-- Game Theory (Minimax, Alpha-Beta)  
-- Logic & Reasoning (Propositional, Predicate)  
-- Machine Learning (Reinforcement Learning)  
+Transportation (self-driving cars)
 
----
+Entertainment (recommendation systems)
 
-### 🔍 2. Search Algorithms
+🧪 Examples in Daily Life
+Google Maps: Pathfinding and traffic prediction using AI.
 
-#### 🔸 Uninformed Search
+Siri / Alexa / Google Assistant: NLP-based voice assistants.
 
-| Algorithm         | Features                                              | Complete | Optimal | Time Complexity | Space Complexity |
-|------------------|--------------------------------------------------------|----------|---------|------------------|-------------------|
-| **BFS**          | Explores level by level                                | ✔️       | ✔️      | O(b^d)           | O(b^d)            |
-| **DFS**          | Explores deepest branch first                          | ✔️       | ❌      | O(b^m)           | O(bm)             |
-| **DLS**          | DFS with depth limit                                   | ✔️       | ❌      | O(b^l)           | O(bl)             |
-| **IDS**          | DFS + BFS hybrid, optimal with less memory             | ✔️       | ✔️      | O(b^d)           | O(bd)             |
-| **Bidirectional**| Two BFS from start and goal                            | ✔️       | ✔️      | O(b^(d/2))       | O(b^(d/2))        |
+Netflix / YouTube: Recommendation systems.
 
-> b = branching factor, d = depth of solution
+Email Filters: Spam classification using machine learning.
 
-#### 🔸 Informed Search (Heuristic-Based)
+📌 Types of AI Algorithms
+Search Algorithms
 
-- **Best-First Search:** Uses a heuristic to choose the most promising path  
-- **A\* Search:** f(n) = g(n) + h(n) — optimal with admissible heuristics  
-- **AO\* Algorithm:** Handles AND-OR graphs, useful for complex problem solving  
+Optimization Techniques
 
----
+Game Theory
 
-### 🔧 3. Heuristic Search Techniques
+Logic and Inference
 
-- **Hill Climbing:** Greedy ascent toward goal, may get stuck in local maxima  
-- **Beam Search:** Keeps top-k best candidates at each level for efficiency
+Machine Learning (Supervised, Unsupervised, Reinforcement)
 
----
+🔹 2. Search Algorithms
+🔸 Uninformed Search
+Breadth-First Search (BFS): Explores all nodes at the present depth before moving deeper. Complete and guarantees shortest path.
 
-### ♟️ 4. Game Playing Algorithms
+Depth-First Search (DFS): Explores as far as possible along one branch before backtracking. Uses less memory but may not find optimal solution.
 
-- **Minimax:** Two-player, zero-sum games (e.g., chess, tic-tac-toe)  
-- **Alpha-Beta Pruning:** Cuts unnecessary branches from Minimax tree, improves efficiency  
+Iterative Deepening Search (IDS): Combines DFS and BFS. Memory-efficient and complete.
 
-```text
-Minimax evaluates all → Alpha-beta skips irrelevant paths!
-🧩 5. Constraint Satisfaction Problems (CSP)
-🧱 Components:
-Variables — e.g., X, Y, Z
+Bidirectional Search: Simultaneously searches forward from start and backward from goal, reducing search time.
 
-Domains — e.g., {Red, Green, Blue}
+Depth-Limited Search: DFS with a depth limit to avoid infinite loops.
 
-Constraints — e.g., X ≠ Y
+🔸 Informed Search (Heuristic-based)
+Best-First Search: Selects the path that appears best according to a heuristic function.
 
-📊 Cryptarithmetic Example:
+A Search Algorithm:* Combines cost to reach a node and estimated cost to goal. Complete, optimal with an admissible heuristic.
+
+AO Algorithm:* Designed for solving problems represented by AND-OR graphs. Explores most promising nodes first based on cost and heuristic.
+
+Efficiency & Complexity:
+
+BFS: Time/Space - O(b^d)
+
+DFS: Time - O(b^m), Space - O(bm)
+
+A*: Time/Space - O(b^d), efficient with good heuristics
+
+🔹 3. Heuristic Search Techniques
+Hill Climbing: An iterative algorithm that moves toward increasing value (uphill) to find peak. May get stuck at local maxima.
+
+Beam Search: Keeps track of ‘k’ best paths at each level. More memory-efficient than BFS.
+
+🔹 4. Game Playing Algorithms
+Minimax Algorithm: Used for decision-making in two-player games. Assumes opponent plays optimally.
+
+Alpha-Beta Pruning: Improves minimax by eliminating branches that won't influence final decision. Greatly reduces time complexity.
+
+
+📐 5. Constraint Satisfaction Problems (CSP)
+3 Main Components
+Variables: X, Y, Z (e.g., colors, digits)
+
+Domains: {Red, Green, Blue} or {0-9}
+
+Constraints: X ≠ Y, A + B = C
+
+Cryptarithmetic Example
 SEND + MORE = MONEY
-Each letter = unique digit → solved via:
+Each letter → unique digit
+Solved using:
 
 Backtracking
 
-Forward Checking
+Forward checking
 
-Constraint Propagation
+Constraint propagation
 
-🔍 Local Consistency Techniques:
-Type	Description
-Arc Consistency	Each value in X has a supporting value in Y
-Path Consistency	Extends arc to three-variable constraints
-Global	All constraints satisfied across variables
+Local Consistency Concepts
+Arc Consistency (AC-3): Each value in X has consistent value in Y
 
-🎯 Advanced Techniques:
-MRV Heuristic: Choose variable with fewest legal values
+Path Consistency: Checks 3-variable relationships
 
-Degree Heuristic: Choose variable involved in most constraints
+Global Consistency: Entire problem satisfies constraints
 
-Forward Checking & Backtracking: Reduce invalid paths early
+Advanced Techniques
+MRV (Minimum Remaining Values): Choose variable with fewest legal values
+
+Degree Heuristic: Variable with most constraints on others
+
+Forward Checking: Eliminate values that violate constraints
+
+Backtracking: Try, fail, and undo method
+
 
 🔗 6. Logic and Reasoning
-🧠 Propositional Logic
-Statements with true/false values.
-Example:
+Propositional Logic
+Deals with true/false values.
 
-If it rains → Ground is wet → P → Q
+Example: "If it rains, the ground is wet." → P → Q
 
-🔄 Inference Types
-Term	Logic Form	Example
-Inverse	¬P → ¬Q	Not raining → Not wet
-Converse	Q → P	Wet ground → It rained
-Contrapositive	¬Q → ¬P	Not wet → Not raining
+Inference Types:
+Term	Definition	Example
+Inverse	¬P → ¬Q	If not raining, ground not wet
+Converse	Q → P	If ground is wet, then it rained
+Contrapositive	¬Q → ¬P	If ground is not wet, then it didn’t rain
 
-🧾 Normal Forms:
+Normal Forms
 CNF (Conjunctive): AND of ORs
 
 DNF (Disjunctive): OR of ANDs
 
-🔢 Predicate Logic:
-Uses variables and quantifiers: ∀x, ∃y
+Predicate Logic
+Includes quantifiers (∀, ∃)
+
 Example: ∀x (Student(x) → Studies(x))
 
-🧮 7. Optimization Algorithms
-⛓️ Branch and Bound
-Explore all possibilities but prune using bounds
+🧩 7. Optimization Algorithms
+Branch and Bound
+Search tree with bound values to prune suboptimal paths.
 
-Used for TSP, scheduling, and Knapsack problems
+Used for TSP, scheduling, knapsack.
 
-🎒 Knapsack Problem:
-Choose items with max value under weight limit
-Approaches:
+Knapsack Problem
+Given weight limit and items, choose max value.
+
+Solved using:
 
 Greedy
 
@@ -162,65 +174,60 @@ Dynamic Programming
 
 Branch & Bound
 
-🕹️ 8. Reinforcement Learning
-An agent learns to make decisions based on rewards.
 
-Core Elements:
+🕹️ 8. Reinforcement Learning (RL)
+Agent, Environment, Actions, Rewards
 
-Agent, Environment
+Learns best actions through exploration and exploitation
 
-Actions, Rewards
+Q-learning Formula:
+Q(s, a) ← Q(s, a) + α [r + γ max Q(s’, a’) − Q(s, a)]
 
-Policy, Q-Values
+α = learning rate, γ = discount factor
 
-🔁 Q-learning Formula:
-text
-Copy
-Edit
-Q(s, a) ← Q(s, a) + α [r + γ * max Q(s’, a’) − Q(s, a)]
-α = Learning rate, γ = Discount factor
 
-📂 9. Information Retrieval (IR)
-Process:
-Indexing
+
+📂 9. Information Retrieval (IR) System Evaluation
+Involves:
+
+Document indexing
 
 Query processing
 
-Ranking documents
+Ranking algorithms
 
-Evaluation Metrics:
+Evaluation Metrics
 Metric	Description
-Precision	Relevant / Retrieved
-Recall	Relevant / Total Relevant
-F1-Score	Harmonic mean of Precision and Recall
+Precision	Relevant documents retrieved / Total retrieved
+Recall	Relevant docs retrieved / Total relevant docs
+F1 Score	Harmonic mean of Precision & Recall
 MAP	Mean Average Precision
 
 🤖 10. Robotics
-What is a Robot?
-An intelligent machine that performs tasks autonomously.
+Definition
+A robot is an intelligent machine capable of performing tasks autonomously.
 
-🔧 Hardware:
-Sensors, Actuators, Motors, Controllers
+Applications
+Industrial (welding, assembly)
 
-💻 Software:
-ROS (Robot Operating System), AI Logic, Path Planning
+Military (bomb defusal)
 
-Applications:
-🏭 Industrial Automation
+Medical (surgical robots)
 
-🩺 Medical Surgery
+Domestic (vacuum robots)
 
-🪖 Military Operations
+Space (rovers)
 
-🏠 Home Cleaning
-
-🚀 Space Exploration
-
-Categories:
+Categories
 Wheeled robots
 
-Humanoids
-
-Drones
+Humanoid robots
 
 Swarm robots
+
+Aerial drones
+
+Requirements
+Hardware: Sensors, motors, controllers
+
+Software: Pathfinding, AI logic, ROS
