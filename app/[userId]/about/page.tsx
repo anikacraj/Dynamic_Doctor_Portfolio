@@ -107,7 +107,7 @@ export default function AboutPage({
           <Tabs.List className="flex flex-col w-full max-w-[380px] mx-auto xl:mx-0 gap-4">
             {[
               { label: "About Me", value: "aboutMe" },
-              { label: "Education", value: "education" },
+              { label: "Research", value: "education" },
               { label: "Degree", value: "degree" },
               { label: "Experience", value: "experience" },
             ].map((tab) => (

@@ -508,7 +508,7 @@ export default function DoctorProfileEditor() {
   transition={{ duration: 0.4, delay: 0.1 }}
   className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-lg ring-1 ring-zinc-200 dark:ring-zinc-700"
 >
-  <h2 className="text-2xl font-semibold text-zinc-800 dark:text-white mb-4">🏫 Education</h2>
+  <h2 className="text-2xl font-semibold text-zinc-800 dark:text-white mb-4">🏫 Research </h2>
 
   <div className="flex items-end mb-3">
         <button
@@ -529,7 +529,7 @@ export default function DoctorProfileEditor() {
 
   {(formData.education || []).map((edu, index) => (
     <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-      {["Year", "Exam Name", "Institute"].map((label, i) => {
+      {["Year", "Paper Name", "Institute"].map((label, i) => {
         const field = ["year", "examName", "institute"][i];
         return (
           <div key={label}>

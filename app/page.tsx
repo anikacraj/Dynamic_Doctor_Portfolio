@@ -61,80 +61,79 @@ export default function Home() {
       <Header />
 
       {/* Hero Section */}
-      <section className="flex flex-col sm:flex-row items-center justify-between px-6 sm:px-16 py-20 gap-12">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-          className="text-center sm:text-left max-w-xl space-y-6"
+<motion.section
+  initial={{ opacity: 0 }}
+  animate={{ opacity: 1 }}
+  transition={{ duration: 1.5, ease: "easeInOut" }}
+  className="relative flex flex-col sm:flex-row items-center justify-between px-6 sm:px-16 py-20 gap-12 min-h-screen bg-cover bg-center bg-no-repeat"
+  style={{
+    backgroundImage: "url('/drPort.jpg')",
+  }}
+>
+  {/* Gradient overlay for modern look */}
+  <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-transparent dark:from-gray-900/70 rounded-none"></div>
+
+  {/* Content */}
+  <motion.div
+    initial={{ opacity: 0, y: 30 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 1 }}
+    className="relative text-center sm:text-left max-w-xl space-y-6 z-10"
+  >
+    <h1 className="text-4xl sm:text-6xl font-extrabold leading-tight text-white drop-shadow-lg">
+      {session?.user ? (
+        <>
+          Welcome back,{" "}
+          <span className="text-blue-300 drop-shadow">
+            {session.user.name}
+          </span>
+        </>
+      ) : (
+        <>
+          Bridging Care & <br className="sm:hidden" />
+          Connection at{" "}
+          <span className="text-blue-300">
+            <span className="dark:text-white text-white">🩺DR</span> Port.
+          </span>
+        </>
+      )}
+    </h1>
+
+    <motion.p
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 0.6, duration: 1 }}
+      className="text-base sm:text-lg text-gray-100 dark:text-gray-300 font-medium drop-shadow-md"
+    >
+      A modern platform where certified doctors meet patients in need — fast, secure, and human-centered care starts here.
+    </motion.p>
+
+    {!session?.user && (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.2, duration: 1 }}
+        className="flex justify-center sm:justify-start gap-4"
+      >
+        <Link
+          href="/register"
+          className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-700 transition"
         >
-          <h1 className="text-4xl sm:text-6xl font-extrabold leading-tight">
-            {session?.user ? (
-              <>
-                Welcome back,{" "}
-                <span className="text-blue-600 dark:text-blue-400">
-                  {session.user.name}
-                </span>
-              </>
-            ) : (
-              <>
-                Bridging Care & <br className="sm:hidden" />
-                Connection at{" "}
-                <span className="text-blue-600">
-                  <span className="dark:text-white text-black">🩺DR</span> Port.
-                </span>
-              </>
-            )}
-          </h1>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6, duration: 1 }}
-            className="text-base sm:text-lg text-gray-700 dark:text-gray-300 font-medium"
-          >
-            A modern platform where certified doctors meet patients in need —
-            fast, secure, and human-centered care starts here.
-          </motion.p>
-
-          {!session?.user && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1.2, duration: 1 }}
-              className="flex justify-center sm:justify-start gap-4"
-            >
-              <Link
-                href="/register"
-                className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow hover:bg-blue-700 transition"
-              >
-                Join as Doctor
-              </Link>
-              <Link
-                href="/patientHome"
-                className="px-6 py-3 border border-blue-600 text-blue-600 dark:text-blue-400 rounded-lg font-semibold hover:bg-blue-50 dark:hover:bg-gray-800 transition"
-              >
-                Go Patient Page
-              </Link>
-            </motion.div>
-          )}
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.2 }}
-          className="relative w-[280px] h-[280px] sm:w-[450px] sm:h-[380px] shadow-2xl rounded-xl"
+          Join as Doctor
+        </Link>
+        <Link
+          href="/patientHome"
+          className="px-6 py-3 border border-blue-300 text-blue-300 rounded-lg font-semibold hover:bg-blue-50 dark:hover:bg-gray-800 transition"
         >
-          <Image
-            src="/contactDr.png"
-            alt="Doctor Illustration"
-            fill
-            priority
-            className="object-cover rounded-xl"
-          />
-        </motion.div>
-      </section>
+          Go Patient Page
+        </Link>
+      </motion.div>
+    )}
+  </motion.div>
+</motion.section>
+
+
+
 
       {/* Why DR Port Section */}
       <section className="py-16 px-6 sm:px-16 bg-blue-50 dark:bg-gray-900 text-center">
