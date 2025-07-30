@@ -809,7 +809,7 @@ export default function DoctorProfileEditor() {
 </motion.div>
 
 {/* Add this section inside your Basic Information div */}
-<div className="bg-gray-50 p-4 rounded-lg shadow-md">
+<div className="bg-gray-700 p-4 rounded-lg shadow-md">
       {/* Toggle Header */}
       <div
         className="flex justify-between items-center cursor-pointer"

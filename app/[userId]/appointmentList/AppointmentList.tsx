@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { FiMail, FiPhone, FiMapPin, FiUser, FiClock, FiCheck, FiX, FiCalendar, FiMessageSquare } from 'react-icons/fi';
+import { FiMail, FiPhone, FiMapPin, FiUser, FiClock, FiBook, FiCheck, FiX, FiCalendar, FiMessageSquare, FiSearch } from 'react-icons/fi';
 
 interface Contact {
   _id: string;
@@ -18,6 +18,7 @@ interface Contact {
   status: 'pending' | 'accepted' | 'rejected';
   createdAt: string;
   updatedAt?: string;
+  patientDate?: string;
 }
 
 interface AppointmentStats {
@@ -43,6 +44,9 @@ export default function AppointmentList() {
   const [selectedTime, setSelectedTime] = useState('');
   const [message, setMessage] = useState('');
   const [currentContact, setCurrentContact] = useState<Contact | null>(null);
+  // Filtering state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [dateFilter, setDateFilter] = useState('');
 
   const params = useParams<{ userId: string }>();
   const userId = params.userId;
@@ -97,6 +101,11 @@ export default function AppointmentList() {
     try {
       if (newStatus === 'accepted') {
         setCurrentContact(contact);
+        // Pre-fill the date with patientDate if available
+        if (contact.patientDate) {
+          const date = new Date(contact.patientDate);
+          setSelectedDate(date.toISOString().split('T')[0]);
+        }
         setIsModalOpen(true);
       } else {
         setUpdatingStatus(contact._id);
@@ -178,6 +187,19 @@ export default function AppointmentList() {
     }
   };
 
+  // Filter contacts by search query and date
+  const filteredContacts = contacts.filter(contact => {
+    const matchesSearch = searchQuery 
+      ? contact.name.toLowerCase().includes(searchQuery.toLowerCase())
+      : true;
+    
+    const matchesDate = dateFilter 
+      ? contact.patientDate?.startsWith(dateFilter)
+      : true;
+    
+    return matchesSearch && matchesDate;
+  });
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
@@ -255,8 +277,8 @@ export default function AppointmentList() {
                 <div className="flex justify-between mb-2">
                   <span className="font-medium dark:text-black ">{label}</span>
                   <span className="font-bold text-white border rounded-full w-8 h-8 flex items-center justify-center bg-purple-500">
-  {stats[key as keyof AppointmentStats]}
-</span>
+                    {stats[key as keyof AppointmentStats]}
+                  </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
@@ -268,13 +290,74 @@ export default function AppointmentList() {
             ))}
           </div>
         </div>
+        
+        {/* Filter Controls */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-6">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Filter Appointments</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Search by Patient Name */}
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <FiSearch className="text-gray-400" />
+              </div>
+              <input
+                type="text"
+                placeholder="Search by patient name..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  <FiX />
+                </button>
+              )}
+            </div>
+            
+            {/* Filter by Patient Date */}
+            <div className="flex gap-2">
+              <div className="flex-1 relative">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                  <FiCalendar className="text-gray-400" />
+                </div>
+                <input
+                  type="date"
+                  value={dateFilter}
+                  onChange={(e) => setDateFilter(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                {dateFilter && (
+                  <button
+                    onClick={() => setDateFilter('')}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  >
+                    <FiX />
+                  </button>
+                )}
+              </div>
+              <button
+                onClick={() => {
+                  setDateFilter('');
+                  setSearchQuery('');
+                }}
+                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+        </div>
+        
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="grid  grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         >
-          {contacts.map((contact) => (
+          {filteredContacts.map((contact) => (
             <motion.div
               key={contact._id}
               variants={itemVariants}
@@ -309,6 +392,14 @@ export default function AppointmentList() {
               </div>
 
               <div className="space-y-3 flex-grow">
+                <div className="flex items-start">
+                  <FiCalendar className="text-gray-500 mr-3 mt-1" />
+                  <span className="text-gray-700">
+                    {contact.patientDate 
+                      ? new Date(contact.patientDate).toLocaleDateString() 
+                      : 'No date specified'}
+                  </span>
+                </div>
                 <div className="flex items-start">
                   <FiMail className="text-gray-500 mr-3 mt-1" />
                   <span className="text-gray-700">{contact.email}</span>
@@ -345,70 +436,63 @@ export default function AppointmentList() {
                   </>
                 )}
               </div>
+              
               {contact.status === 'pending' && (
-  <div className="flex space-x-2 mt-6">
-    <button
-      onClick={() => handleStatusChange(contact, 'accepted')}
-      className="flex-1 flex items-center justify-center bg-green-500 text-white py-2 rounded-lg hover:bg-green-600"
-    >
-      <FiCheck className="mr-2" /> Accept
-    </button>
-    <button
-      onClick={() => handleStatusChange(contact, 'rejected')}
-      className="flex-1 flex items-center justify-center bg-red-500 text-white py-2 rounded-lg hover:bg-red-600"
-    >
-      <FiX className="mr-2" /> Reject
-    </button>
-  </div>
-)}
+                <div className="flex space-x-2 mt-6">
+                  <button
+                    onClick={() => handleStatusChange(contact, 'accepted')}
+                    className="flex-1 flex items-center justify-center bg-green-500 text-white py-2 rounded-lg hover:bg-green-600"
+                  >
+                    <FiCheck className="mr-2" /> Accept
+                  </button>
+                  <button
+                    onClick={() => handleStatusChange(contact, 'rejected')}
+                    className="flex-1 flex items-center justify-center bg-red-500 text-white py-2 rounded-lg hover:bg-red-600"
+                  >
+                    <FiX className="mr-2" /> Reject
+                  </button>
+                </div>
+              )}
 
+              {contact.status === 'accepted' && (
+                <div className="mt-4 pt-4 border-t border-gray-200 text-right space-y-2">
+                  <span className="px-3 py-1 rounded-full text-sm bg-green-100 text-green-800">
+                    Accepted
+                  </span>
 
+                  <div className="text-sm text-gray-700 dark:text-gray-300">
+                    {contact.date && (
+                      <>
+                        <p>Date: {new Date(contact.date).toLocaleDateString()}</p>
+                        <p>Time: {contact.time}</p>
+                      </>
+                    )}
+                  </div>
 
-{contact.status === 'accepted' && (
-  <div className="mt-4 pt-4 border-t border-gray-200 text-right space-y-2">
-    {/* 1. Accepted Badge */}
-    <span className="px-3 py-1 rounded-full text-sm bg-green-100 text-green-800">
-      Accepted
-    </span>
+                  {contact.updatedAt && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      Updated: {new Date(contact.updatedAt).toLocaleString()}
+                    </p>
+                  )}
+                </div>
+              )}
 
-    {/* 2. Booking Details */}
-    <div className="text-sm text-gray-700 dark:text-gray-300">
-      <p>Book Time: 12:00 AM</p>
-      <p>Date: 12/03/2025</p>
-    </div>
+              {contact.status === 'rejected' && (
+                <div className="mt-4 pt-4 border-t border-gray-200 text-right">
+                  <span className="px-3 py-1 rounded-full text-sm bg-red-100 text-red-800">
+                    Rejected
+                  </span>
 
-    {/* 3. Updated Time */}
-    {contact.updatedAt && (
-      <p className="text-xs text-gray-500 mt-1">
-        {new Date(contact.updatedAt).toLocaleString()}
-      </p>
-    )}
-  </div>
-)}
-
-{contact.status === 'rejected' && (
-  <div className="mt-4 pt-4 border-t border-gray-200 text-right">
-    {/* Only show Rejected Badge */}
-    <span className="px-3 py-1 rounded-full text-sm bg-red-100 text-red-800">
-      Rejected
-    </span>
-
-    {/* Updated Time */}
-    {contact.updatedAt && (
-      <p className="text-xs text-gray-500 mt-1">
-        {new Date(contact.updatedAt).toLocaleString()}
-      </p>
-    )}
-  </div>
-)}
-
-
-
-        
+                  {contact.updatedAt && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      Updated: {new Date(contact.updatedAt).toLocaleString()}
+                    </p>
+                  )}
+                </div>
+              )}
             </motion.div>
           ))}
         </motion.div>
-      
       </motion.div>
 
       {isModalOpen && (
@@ -418,28 +502,45 @@ export default function AppointmentList() {
               <FiCalendar className="mr-2" /> Schedule Appointment
             </h2>
 
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              required
-              className="w-full border p-2 rounded-lg"
-              min={new Date().toISOString().split('T')[0]}
-            />
-            <input
-              type="time"
-              value={selectedTime}
-              onChange={(e) => setSelectedTime(e.target.value)}
-              required
-              className="w-full border p-2 rounded-lg"
-            />
-            <textarea
-              placeholder="Additional message (optional)"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              rows={3}
-              className="w-full border p-2 rounded-lg"
-            ></textarea>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Date
+              </label>
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                required
+                className="w-full border p-2 rounded-lg"
+                min={new Date().toISOString().split('T')[0]}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Time
+              </label>
+              <input
+                type="time"
+                value={selectedTime}
+                onChange={(e) => setSelectedTime(e.target.value)}
+                required
+                className="w-full border p-2 rounded-lg"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Additional message (optional)
+              </label>
+              <textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                rows={3}
+                className="w-full border p-2 rounded-lg"
+                placeholder="Add any additional notes for the patient..."
+              ></textarea>
+            </div>
 
             <div className="flex justify-end space-x-4 mt-6">
               <button

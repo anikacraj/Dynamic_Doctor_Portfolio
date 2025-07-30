@@ -3,12 +3,17 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
-  Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
@@ -21,8 +26,21 @@ const Login = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Get the callbackUrl from the query parameter
+  const { status } = useSession(); // Get authentication status
+
   const callbackUrl = searchParams.get("callbackUrl") || "/";
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.replace(callbackUrl);
+    }
+  }, [status, router, callbackUrl]);
+
+  
+
+  if (status === "authenticated") {
+    return null; // Don’t render login form for authenticated users
+  }
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -38,7 +56,7 @@ const Login = () => {
     if (result?.error) {
       toast({ variant: "destructive", title: result.error });
     } else {
-      router.replace(callbackUrl); // 🔁 Redirect to original page
+      router.replace(callbackUrl);
     }
   };
 

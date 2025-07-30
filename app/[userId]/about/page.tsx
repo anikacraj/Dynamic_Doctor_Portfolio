@@ -164,11 +164,11 @@ export default function AboutPage({
                       key={index}
                       className="bg-[#232329] p-6 rounded-xl space-y-2"
                     >
-                      <span className="text-accent font-medium">
+                      <span className="text-accent font-medium text-white ">
                         {edu.year}
                       </span>
-                      <h4 className="text-xl font-semibold">{edu.examName}</h4>
-                      <p className="text-gray-300">{edu.institute}</p>
+                      <h4 className="text-xl font-semibold  text-white ">{edu.examName}</h4>
+                      <p className="text-gray-300"><span className="font-bold text-2xl">Result</span> <br /> {edu.institute}</p>
                     </li>
                   ))}
                 </ul>
@@ -193,7 +193,7 @@ export default function AboutPage({
 
             {/* Experience */}
             <Tabs.Content value="experience">
-              <div className="h-[400px] bg-[#1f1f23] rounded-xl overflow-y-auto scrollbar-thin scrollbar-thumb-accent scrollbar-track-[#2c2c30] p-6 pr-4">
+              <div className="h-[400px] bg-[#1f1f23] text-white rounded-xl overflow-y-auto scrollbar-thin scrollbar-thumb-accent scrollbar-track-[#2c2c30] p-6 pr-4">
                 <ul className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {experience.map((exp, index) => (
                     <li

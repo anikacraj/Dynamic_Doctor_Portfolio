@@ -65,7 +65,7 @@ export default function Home() {
   initial={{ opacity: 0 }}
   animate={{ opacity: 1 }}
   transition={{ duration: 1.5, ease: "easeInOut" }}
-  className="relative flex flex-col sm:flex-row items-center justify-between px-6 sm:px-16 py-20 gap-12 min-h-screen bg-cover bg-center bg-no-repeat"
+  className="relative mt-10 flex flex-col sm:flex-row items-center justify-between px-6 sm:px-16 py-20 gap-12 min-h-screen bg-cover bg-center bg-no-repeat"
   style={{
     backgroundImage: "url('/drPort.jpg')",
   }}

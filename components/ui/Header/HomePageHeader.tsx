@@ -34,7 +34,7 @@ export default function Header() {
   return (
     <>
     {/* Header Wrapper */}
-    <header className="w-full py-6 xl:py-8 mt-10 mb-10 px-4 text-accent bg-white dark:bg-black">
+    <header className="w-full py-6 xl:py-10 mb-[70px] px-10 text-accent bg-white dark:bg-black">
       <div className="max-w-[1200px] mx-auto flex justify-around items-center">
         
         {/* Logo */}
@@ -120,7 +120,7 @@ export default function Header() {
       </button>
 
       {showMenu && (
-        <div className="absolute left-0 mt-2 w-40 bg-white dark:bg-gray-800 shadow-lg rounded-md z-50">
+        <div className="absolute left-0 mt-2 w-40 bg-white dark:bg-gray-800 shadow-lg rounded-md z-100">
           <ul className="text-sm text-gray-800 dark:text-gray-100">
             <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
             <Link href={`/login?callbackUrl=/${session?.user?.id}/appointmentList`}>Appointment List</Link>
@@ -130,7 +130,7 @@ export default function Header() {
             </li>
 
             <li>
-              <Link href={`/login?callbackUrl=/${session?.user?.id}/blog`}>Create Blog</Link>
+              <Link className="ml-5" href={`/login?callbackUrl=/${session?.user?.id}/blog`}>Create Blog</Link>
             </li>
             <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
             <button onClick={() => signOut()}>

@@ -5,9 +5,9 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 
 const images = [
-  '/ramaBiswas.png',
-  '/Dr.Shahedul.png',
-  '/DrKazi.png',
+  '/a.jpg',
+  '/b.jpg',
+  '/c.jpg',
   
 ];
 
